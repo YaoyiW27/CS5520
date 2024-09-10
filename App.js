@@ -11,16 +11,6 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Header name={appName}></Header>
-      <TextInput
-          placeholder="Type something"
-          autoCorrect={true}
-          keyboardType="default"
-          value={text}
-          style={{borderBottomColor: "purple", borderBottomWidth: 2}}
-          onChangeText={function (changedText){
-            console.log(changedText);
-          }}
-      />
       <Text>{text}</Text>
     </View>
   );
