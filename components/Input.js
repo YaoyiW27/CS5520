@@ -1,20 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { useState } from "react";
-import { TextInput } from "react-native";
+import { TextInput, StyleSheet, Text, View } from 'react-native'
+import { useState, useRef, useEffect } from "react";
 
-export default function Input() {
+export default function Input(autoFocus) {
     const [text, setText] = useState("");
+    const inputRef = useRef(null);
 
   return (
     <TextInput
-    placeholder="Type something"
-    autoCorrect={true}
-    keyboardType="default"
-    value={text}
-    style={{borderBottomColor: "purple", borderBottomWidth: 2}}
-    onChangeText={function (changedText){
-    console.log(changedText);
-    }}
+      ref={inputRef}
+      placeholder="Type something"
+      autoCorrect={true}
+      keyboardType="default"
+      value={text}
+      style={{borderBottomColor: "purple", borderBottomWidth: 2}}
+      onChangeText={setText}
     />
   )
 }
