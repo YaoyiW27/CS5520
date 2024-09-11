@@ -5,6 +5,12 @@ export default function Input(autoFocus) {
     const [text, setText] = useState("");
     const inputRef = useRef(null);
 
+    useEffect(() => {
+      if(autoFocus && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [autoFocus]);
+    
   return (
     <TextInput
       ref={inputRef}
