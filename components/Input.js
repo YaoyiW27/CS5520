@@ -10,17 +10,20 @@ export default function Input(autoFocus) {
         inputRef.current.focus();
       }
     }, [autoFocus]);
-    
+
   return (
-    <TextInput
-      ref={inputRef}
-      placeholder="Type something"
-      autoCorrect={true}
-      keyboardType="default"
-      value={text}
-      style={{borderBottomColor: "purple", borderBottomWidth: 2}}
-      onChangeText={setText}
-    />
+    <View>
+      <TextInput
+        ref={inputRef}
+        placeholder="Type something"
+        autoCorrect={true}
+        keyboardType="default"
+        value={text}
+        style={{borderBottomColor: "purple", borderBottomWidth: 2}}
+        onChangeText={setText}
+      />
+      {text.length < 0 && <Text>Character Count: {text.length}</Text>}
+    </View>
   )
 }
 
