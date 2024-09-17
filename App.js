@@ -12,9 +12,14 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Header name={appName}></Header>
-      <Input autoFocus={true}/>
+      <Input autoFocus={true} onConfirm={handleInputData}/>
+      <Text>{text}</Text>
     </View>
   );
+}
+
+const handleInputData = (inputText) => {
+  setText(inputText)
 }
 
 const styles = StyleSheet.create({
