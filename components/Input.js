@@ -1,4 +1,4 @@
-import { TextInput, StyleSheet, Text, View } from 'react-native'
+import { TextInput, StyleSheet, Text, View, Button } from 'react-native'
 import { useState, useRef, useEffect } from "react";
 
 export default function Input( { autoFocus } ) {
@@ -22,6 +22,12 @@ export default function Input( { autoFocus } ) {
     }
   }
 
+  const handleInputData = () => {
+    console.log(text);
+    onConfirm(text);
+  }
+
+
   return (
     <View>
       <TextInput
@@ -37,6 +43,10 @@ export default function Input( { autoFocus } ) {
       />
       {showCount && text.length > 0 && <Text>Character Count: {text.length}</Text>}
       {message.length > 0 && <Text>{message}</Text>}
+      <Button 
+        title="Confirm" 
+        onPress={handleInputData}
+      />
     </View>
   )
 }
