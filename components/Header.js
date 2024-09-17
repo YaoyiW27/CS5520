@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 
-export default function Header({name}) {
+export default function Header({ name }) {
   return (
-    <View>
-      <Text>Welcome to {name}</Text>
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerText}>Welcome to {name}</Text>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -23,8 +23,10 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333', 
+    color: '#6a0dad', 
     borderWidth: 2,
-    borderColor: '#333',
+    borderColor: '#6a0dad', 
+    padding: 10,
+    borderRadius: 8, 
   }
-})
+});
