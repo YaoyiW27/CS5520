@@ -22,7 +22,7 @@ export default function Input( { autoFocus } ) {
     }
   }
 
-  const handleInputData = () => {
+  const handleConfirm = () => {
     console.log(text);
     onConfirm(text);
   }
@@ -45,7 +45,7 @@ export default function Input( { autoFocus } ) {
       {message.length > 0 && <Text>{message}</Text>}
       <Button 
         title="Confirm" 
-        onPress={handleInputData}
+        onPress={handleConfirm}
       />
     </View>
   )
