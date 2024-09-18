@@ -52,9 +52,11 @@ export default function Input({
       <View style={styles.container}>
         <Image source={{uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png'}}
                style={styles.image}
+               accessibilityLabel="Netwrok image"
         />
         <Image source={require('../assets/target.png')}
                style={styles.image}
+              accessibilityLabel="Local image"
         />
         <TextInput
           autoFocus={textInputFocus}
