@@ -8,12 +8,17 @@ export default function App() {
   const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const appName = "My app!";
-  // update to receive data
+  
   function handleInputData(data) {
     console.log("App.js ", data);
     setReceivedData(data);
     setModalVisible(false);
   }
+
+  function handleCancel() {
+    setModalVisible(false);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
@@ -30,6 +35,7 @@ export default function App() {
         textInputFocus={true}
         inputHandler={handleInputData}
         isModalVisible={modalVisible}
+        onCancel={handleCancel} 
       />
       <View style={styles.bottomView}>
         <Text style={styles.text}>{receivedData}</Text>
