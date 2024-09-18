@@ -82,4 +82,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   input: { borderColor: "pink", borderWidth: 2, padding: 5 },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "60%",
+  },
 });
