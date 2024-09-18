@@ -13,6 +13,7 @@ export default function Input({
   function handleConfirm() {
     // console.log(text);
     inputHandler(text); 
+    setText("");
   }
 
   function handleCancelPress() {
@@ -28,6 +29,7 @@ export default function Input({
           text: "Yes",
           onPress: () => {
             onCancel();
+            setText("");
           }
         },
       ],
