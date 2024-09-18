@@ -9,6 +9,7 @@ export default function Input({
 }) {
   const [text, setText] = useState("");
   const [blur, setBlur] = useState(false);
+  const [isConfirmDisabled, setIsConfirmDisabled] = useState(true);  
 
   function handleConfirm() {
     // console.log(text);
@@ -37,6 +38,15 @@ export default function Input({
     )
   }
 
+  function handleTextChange(changedText) {
+    setText(changedText);
+    if (changedText.length >= 3) {
+      setIsConfirmDisabled(false); 
+    } else {
+      setIsConfirmDisabled(true);  
+    }
+  }
+
   return (
     <Modal animationType="slide" visible={isModalVisible}>
       <View style={styles.container}>
@@ -47,9 +57,7 @@ export default function Input({
           keyboardType="default"
           value={text}
           style={styles.input}
-          onChangeText={(changedText) => {
-            setText(changedText);
-          }}
+          onChangeText={handleTextChange}
           onBlur={() => {
             setBlur(true);
           }}
@@ -68,7 +76,7 @@ export default function Input({
           text && <Text>{text.length}</Text>
         )}
         <View style={styles.buttonContainer}>
-          <Button title="Confirm" onPress={handleConfirm} />
+          <Button title="Confirm" onPress={handleConfirm} disabled={isConfirmDisabled} />
           <Button title="Cancel" onPress={handleCancelPress} />
         </View>
       </View>
