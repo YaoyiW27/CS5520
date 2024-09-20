@@ -41,9 +41,9 @@ export default function Input({
   function handleTextChange(changedText) {
     setText(changedText);
     if (changedText.length >= 3) {
-      setIsConfirmDisabled(false); 
+      setIsConfirmDisabled(true); 
     } else {
-      setIsConfirmDisabled(true);  
+      setIsConfirmDisabled(false);  
     }
   }
 
