@@ -51,12 +51,12 @@ export default function Input({
     <Modal animationType="slide" visible={isModalVisible}>
       <View style={styles.container}>
         <Image source={{uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png'}}
-               style={styles.image}
-               accessibilityLabel="Netwrok image"
+               style={styles.image} alt='Netwrok image'
+               // accessibilityLabel="Netwrok image"
         />
         <Image source={require('../assets/target.png')}
-               style={styles.image}
-              accessibilityLabel="Local image"
+               style={styles.image} alt='Local image'
+              // accessibilityLabel="Local image"
         />
         <TextInput
           autoFocus={textInputFocus}
