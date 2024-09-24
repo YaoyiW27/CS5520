@@ -56,16 +56,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    justifyContent: "center",
   },
   topView: {
-    flex: 1,
+    flex: 0.5, 
     alignItems: "center",
     justifyContent: "center",
   },
   bottomView: {
-    flex: 4,
-    backgroundColor: "#dcd",
+    flex: 1.5, 
+    backgroundColor: "#dcd", 
     paddingHorizontal: 10,
   },
 });
