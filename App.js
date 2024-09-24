@@ -70,6 +70,11 @@ export default function App() {
               <Text style={styles.noGoalsText}>No goals to show</Text>
             </View>
           }
+          ListHeaderComponent={
+            <View>
+              <Text style={styles.myGoalsText}>My Goals</Text>
+            </View>
+          }
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {goals.map((goalObj) => {
@@ -105,6 +110,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#dcd" 
   },
   noGoalsText: {
+    color: "purple",
+    fontSize: 18,
+  },
+  myGoalsText: {
     color: "purple",
     fontSize: 18,
   },
