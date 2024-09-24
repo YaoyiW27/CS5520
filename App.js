@@ -7,12 +7,16 @@ import GoalItem from "./components/GoalItem"; // Import GoalItem component
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [goals, setGoals] = useState([]); // array to hold the list of goals
-  const appName = "My app!";
+  
+  const [goals, setGoals] = useState([
+    { text: 'Study', id: Math.random() },
+    { text: 'Exercise', id: Math.random() },
+    { text: 'Quiz', id: Math.random() },
+  ]); 
 
   // Handle adding a goal
   function handleInputData(data) {
-    const newGoal = { text: data, id: Math.random().toString() };
+    const newGoal = { text: data, id: Math.random() };
     setGoals((currentGoals) => [...currentGoals, newGoal]);
     setModalVisible(false);
   }
@@ -30,7 +34,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.topView}>
-        <Header name={appName} />
+        <Header name="My app!" />
         <Button
           title="Add a Goal"
           onPress={() => setModalVisible(true)}
