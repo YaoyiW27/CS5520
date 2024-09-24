@@ -7,28 +7,32 @@ export default function Input({
   isModalVisible,
   dismissModal,
 }) {
-  const [text, setText] = useState("");
-  const [blur, setBlur] = useState(false);
-  const minimumChar = 3;
+  const [text, setText] = useState(""); // Manage the input text state
+  const [blur, setBlur] = useState(false); // Track if the input has lost focus
+  const minimumChar = 3; // Define the minimum character requirement for confirmation
 
+  // Handle the Confirm button press
   function handleConfirm() {
-    inputHandler(text);
-    setText(""); // reset text after confirming
+    inputHandler(text); // Pass the text back to the parent component (App.js)
+    setText(""); // Clear the input after confirming
   }
 
+  // Handle the Cancel button press
   function handleCancel() {
-    Alert.alert("Cancel", "Are you sure you want to cancel", [
-      { text: "cancel", style: "cancel" },
+    // Show an alert to confirm if the user really wants to cancel
+    Alert.alert("Cancel", "Are you sure you want to cancel?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: "ok",
+        text: "OK",
         onPress: () => {
-          setText("");
-          dismissModal();
+          setText(""); // Clear the input if they confirm the cancel action
+          dismissModal(); // Close the modal
         },
       },
     ]);
   }
 
+  // Handle the text change as the user types
   function handleTextChange(changedText) {
     setText(changedText);
   }
@@ -37,16 +41,19 @@ export default function Input({
     <Modal animationType="slide" visible={isModalVisible}>
       <View style={styles.container}>
         <View style={styles.modalContent}>
+          {/* Network image */}
           <Image
             source={{ uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png" }}
             style={styles.image}
             alt="Network image"
           />
+          {/* Local image */}
           <Image
             source={require("../assets/target.png")}
             style={styles.image}
             alt="Local image"
           />
+          {/* Text input field */}
           <TextInput
             autoFocus={textInputFocus}
             placeholder="Type something"
@@ -56,13 +63,14 @@ export default function Input({
             style={styles.input}
             onChangeText={handleTextChange}
             onBlur={() => {
-              setBlur(true);
+              setBlur(true); // Set blur to true when the input loses focus
             }}
             onFocus={() => {
-              setBlur(false);
+              setBlur(false); // Remove blur state when input is focused again
             }}
           />
 
+          {/* Conditional rendering for character validation */}
           {blur ? (
             text.length >= minimumChar ? (
               <Text>Thank you</Text>
@@ -70,10 +78,16 @@ export default function Input({
               <Text>Please type more than {minimumChar} characters</Text>
             )
           ) : (
-            text.length > 0 && <Text>{text.length}</Text> // show count only when typing
+            text.length > 0 && <Text>{text.length}</Text> // Show the character count while typing
           )}
+
+          {/* Button container */}
           <View style={styles.buttonContainer}>
-            <Button title="Confirm" onPress={handleConfirm} disabled={text.length < minimumChar} />
+            <Button
+              title="Confirm"
+              onPress={handleConfirm}
+              disabled={text.length < minimumChar} // Disable confirm if minimum characters aren't met
+            />
             <Button title="Cancel" onPress={handleCancel} />
           </View>
         </View>
@@ -93,6 +107,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 5,
     marginBottom: 10,
+    width: "80%", // Adjust input width to better fit the screen
+    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -101,7 +117,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     borderRadius: 6,
-    backgroundColor: "#aaa",
+    backgroundColor: "#ddd",
     alignItems: "center",
     padding: 20,
   },
