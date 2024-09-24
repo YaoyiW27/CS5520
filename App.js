@@ -7,6 +7,7 @@ import {
   Text,
   View,
   FlatList,
+  Alert,
 } from "react-native";
 import Header from "./components/Header";
 import { useState } from "react";
@@ -38,6 +39,17 @@ export default function App() {
         return goalObj.id != deletedId;
       });
     });
+  }
+  function handleDeleteAll() {
+    Alert.alert("Delete All", "Are you sure you want to delete all goals", [
+      {
+        text: "Yes",
+        onPress: () => {
+          setGoals([]);
+        },
+      },
+      { text: "No", style: "cancel" },
+    ]);
   }
 
   return (
@@ -77,6 +89,11 @@ export default function App() {
             </View>
             ) : null
           } 
+          ListFooterComponent={
+            goals.length > 0 ? (
+            <Button title="Delete All" onPress={handleDeleteAll} />
+            ) : null
+          }
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {goals.map((goalObj) => {
