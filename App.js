@@ -22,7 +22,7 @@ export default function App() {
   function handleInputData(data) {
     console.log("App.js ", data);
     let newGoal = { text: data, id: Math.random() };
-    
+
     setGoals((prevGoals) => {
       return [...prevGoals, newGoal];
     });
@@ -39,6 +39,7 @@ export default function App() {
       });
     });
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
@@ -64,6 +65,11 @@ export default function App() {
           renderItem={({ item }) => {
             return <GoalItem deleteHandler={handleGoalDelete} goalObj={item} />;
           }}
+          ListEmptyComponent={
+            <View>
+              <Text style={styles.noGoalsText}>No goals to show</Text>
+            </View>
+          }
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {goals.map((goalObj) => {
@@ -89,11 +95,17 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     alignItems: "center",
   },
-
   topView: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  bottomView: { flex: 4, backgroundColor: "#dcd" },
+  bottomView: { 
+    flex: 4, 
+    backgroundColor: "#dcd" 
+  },
+  noGoalsText: {
+    color: "purple",
+    fontSize: 18,
+  },
 });
