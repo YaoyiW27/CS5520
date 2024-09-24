@@ -5,87 +5,77 @@ export default function Input({
   textInputFocus,
   inputHandler,
   isModalVisible,
-  onCancel
+  dismissModal,
 }) {
   const [text, setText] = useState("");
   const [blur, setBlur] = useState(false);
-  const [isConfirmDisabled, setIsConfirmDisabled] = useState(true);  
+  const minimumChar = 3;
 
   function handleConfirm() {
-    // console.log(text);
-    inputHandler(text); 
-    setText("");
+    inputHandler(text);
+    setText(""); // reset text after confirming
   }
 
-  function handleCancelPress() {
-    Alert.alert(
-      "Are you sure?",
-      "Do you want to cancel?",
-      [
-        {
-          text: "No",
-          style: "cancel",
+  function handleCancel() {
+    Alert.alert("Cancel", "Are you sure you want to cancel", [
+      { text: "cancel", style: "cancel" },
+      {
+        text: "ok",
+        onPress: () => {
+          setText("");
+          dismissModal();
         },
-        { 
-          text: "Yes",
-          onPress: () => {
-            onCancel();
-            setText("");
-          }
-        },
-      ],
-      { cancelable: false }
-    )
+      },
+    ]);
   }
 
   function handleTextChange(changedText) {
     setText(changedText);
-    if (changedText.length >= 3) {
-      setIsConfirmDisabled(true); 
-    } else {
-      setIsConfirmDisabled(false);  
-    }
   }
 
   return (
     <Modal animationType="slide" visible={isModalVisible}>
       <View style={styles.container}>
-        <Image source={{uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png'}}
-               style={styles.image} alt='Netwrok image'
-               // accessibilityLabel="Netwrok image"
-        />
-        <Image source={require('../assets/target.png')}
-               style={styles.image} alt='Local image'
-              // accessibilityLabel="Local image"
-        />
-        <TextInput
-          autoFocus={textInputFocus}
-          placeholder="Type something"
-          autoCorrect={true}
-          keyboardType="default"
-          value={text}
-          style={styles.input}
-          onChangeText={handleTextChange}
-          onBlur={() => {
-            setBlur(true);
-          }}
-          onFocus={() => {
-            setBlur(false);
-          }}
-        />
+        <View style={styles.modalContent}>
+          <Image
+            source={{ uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png" }}
+            style={styles.image}
+            alt="Network image"
+          />
+          <Image
+            source={require("../assets/target.png")}
+            style={styles.image}
+            alt="Local image"
+          />
+          <TextInput
+            autoFocus={textInputFocus}
+            placeholder="Type something"
+            autoCorrect={true}
+            keyboardType="default"
+            value={text}
+            style={styles.input}
+            onChangeText={handleTextChange}
+            onBlur={() => {
+              setBlur(true);
+            }}
+            onFocus={() => {
+              setBlur(false);
+            }}
+          />
 
-        {blur ? (
-          text.length >= 3 ? (
-            <Text>Thank you</Text>
+          {blur ? (
+            text.length >= minimumChar ? (
+              <Text>Thank you</Text>
+            ) : (
+              <Text>Please type more than {minimumChar} characters</Text>
+            )
           ) : (
-            <Text>Please type more than 3 characters</Text>
-          )
-        ) : (
-          text && <Text>{text.length}</Text>
-        )}
-        <View style={styles.buttonContainer}>
-          <Button title="Confirm" onPress={handleConfirm} disabled={isConfirmDisabled} />
-          <Button title="Cancel" onPress={handleCancelPress} />
+            text.length > 0 && <Text>{text.length}</Text> // show count only when typing
+          )}
+          <View style={styles.buttonContainer}>
+            <Button title="Confirm" onPress={handleConfirm} disabled={text.length < minimumChar} />
+            <Button title="Cancel" onPress={handleCancel} />
+          </View>
         </View>
       </View>
     </Modal>
@@ -95,19 +85,29 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
-  input: { borderColor: "pink", borderWidth: 2, padding: 5 },
+  input: {
+    borderColor: "purple",
+    borderWidth: 2,
+    padding: 5,
+    marginBottom: 10,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "60%",
   },
+  modalContent: {
+    borderRadius: 6,
+    backgroundColor: "#aaa",
+    alignItems: "center",
+    padding: 20,
+  },
   image: {
     width: 100,
     height: 100,
     marginBottom: 10,
-  }
+  },
 });

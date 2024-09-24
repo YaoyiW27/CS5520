@@ -1,21 +1,28 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Button, SafeAreaView, StyleSheet, ScrollView, View } from "react-native";
 import Header from "./components/Header";
 import { useState } from "react";
 import Input from "./components/Input";
+import GoalItem from "./components/GoalItem"; // Import GoalItem component
 
 export default function App() {
-  const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [goals, setGoals] = useState([]); // array to hold the list of goals
   const appName = "My app!";
-  
+
+  // Handle adding a goal
   function handleInputData(data) {
-    console.log("App.js ", data);
-    setReceivedData(data);
+    const newGoal = { text: data, id: Math.random().toString() };
+    setGoals((currentGoals) => [...currentGoals, newGoal]);
     setModalVisible(false);
   }
 
-  function handleCancel() {
+  // Handle deleting a goal
+  function deleteGoal(goalId) {
+    setGoals((currentGoals) => currentGoals.filter((goal) => goal.id !== goalId));
+  }
+
+  function dismissModal() {
     setModalVisible(false);
   }
 
@@ -23,23 +30,24 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.topView}>
-        <Header name={appName}></Header>
+        <Header name={appName} />
         <Button
           title="Add a Goal"
-          onPress={function () {
-            setModalVisible(true);
-          }}
+          onPress={() => setModalVisible(true)}
         />
       </View>
       <Input
         textInputFocus={true}
         inputHandler={handleInputData}
         isModalVisible={modalVisible}
-        onCancel={handleCancel} 
+        dismissModal={dismissModal}
       />
-      <View style={styles.bottomView}>
-        <Text style={styles.text}>{receivedData}</Text>
-      </View>
+
+      <ScrollView style={styles.bottomView}>
+        {goals.map((goal) => (
+          <GoalItem key={goal.id} goal={goal} onDelete={deleteGoal} />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -48,16 +56,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
     justifyContent: "center",
-  },
-  text: {
-    color: "pink",
   },
   topView: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  bottomView: { flex: 4, backgroundColor: "#d5d", alignItems: "center" },
+  bottomView: {
+    flex: 4,
+    backgroundColor: "#dcd",
+    paddingHorizontal: 10,
+  },
 });
