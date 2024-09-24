@@ -71,10 +71,12 @@ export default function App() {
             </View>
           }
           ListHeaderComponent={
+            goals.length > 0 ? (
             <View>
               <Text style={styles.myGoalsText}>My Goals</Text>
             </View>
-          }
+            ) : null
+          } 
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {goals.map((goalObj) => {
