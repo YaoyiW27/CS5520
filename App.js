@@ -18,11 +18,11 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
   const appName = "My app!";
-  // update to receive data
+
   function handleInputData(data) {
     console.log("App.js ", data);
     let newGoal = { text: data, id: Math.random() };
-    //make a new obj and store the received data as the obj's text property
+    
     setGoals((prevGoals) => {
       return [...prevGoals, newGoal];
     });
