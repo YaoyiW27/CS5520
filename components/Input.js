@@ -1,4 +1,13 @@
-import { Button, Modal, StyleSheet, Text, TextInput, View, Alert, Image } from "react-native";
+import {
+  Button,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Alert,
+  Image,
+} from "react-native";
 import React, { useState } from "react";
 
 export default function Input({
