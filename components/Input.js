@@ -1,11 +1,11 @@
 import {
+  Alert,
   Button,
   Modal,
   StyleSheet,
   Text,
   TextInput,
   View,
-  Alert,
   Image,
 } from "react-native";
 import React, { useState } from "react";
@@ -19,17 +19,17 @@ export default function Input({
   const [text, setText] = useState("");
   const [blur, setBlur] = useState(false);
   const minimumChar = 3;
-
   function handleConfirm() {
+    // console.log(text);
     inputHandler(text);
     setText("");
   }
-
   function handleCancel() {
-    Alert.alert("Cancel", "Are you sure you want to cancel?", [
-      { text: "Cancel", style: "cancel" },
+    // hide the modal
+    Alert.alert("Cancel", "Are you sure you want to cancel", [
+      { text: "cancel", style: "cancel" },
       {
-        text: "OK",
+        text: "ok",
         onPress: () => {
           setText("");
           dismissModal();
@@ -37,29 +37,23 @@ export default function Input({
       },
     ]);
   }
-
-  function handleTextChange(changedText) {
-    setText(changedText);
-  }
-
   return (
     <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
-        <View style={styles.modalContent}>
-          {/* Network image */}
+        <View style={styles.modalContainer}>
           <Image
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png",
             }}
             style={styles.image}
-            alt="Network image"
+            alt="Image of a an arrow"
           />
-          {/* Local image */}
           <Image
             source={require("../assets/target.png")}
             style={styles.image}
-            alt="Local image"
+            alt="Image of a an arrow"
           />
+
           <TextInput
             autoFocus={textInputFocus}
             placeholder="Type something"
@@ -67,9 +61,15 @@ export default function Input({
             keyboardType="default"
             value={text}
             style={styles.input}
-            onChangeText={handleTextChange}
-            onBlur={() => setBlur(true)}
-            onFocus={() => setBlur(false)}
+            onChangeText={(changedText) => {
+              setText(changedText);
+            }}
+            onBlur={() => {
+              setBlur(true);
+            }}
+            onFocus={() => {
+              setBlur(false);
+            }}
           />
 
           {blur ? (
@@ -79,16 +79,19 @@ export default function Input({
               <Text>Please type more than {minimumChar} characters</Text>
             )
           ) : (
-            text.length > 0 && <Text>{text.length}</Text>
+            text && <Text>{text.length}</Text>
           )}
-
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Confirm"
-              onPress={handleConfirm}
-              disabled={text.length < minimumChar}
-            />
-            <Button title="Cancel" onPress={handleCancel} />
+          <View style={styles.buttonsRow}>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={handleCancel} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                disabled={text.length < minimumChar}
+                title="Confirm"
+                onPress={handleConfirm}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -99,32 +102,25 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    // backgroundColor: "white",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
   },
   input: {
     borderColor: "purple",
     borderWidth: 2,
     padding: 5,
-    marginBottom: 10,
-    width: "80%",
-    textAlign: "center",
+    marginVertical: 10,
+  },
+  modalContainer: {
+    borderRadius: 6,
+    backgroundColor: "#999",
+    alignItems: "center",
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "60%",
+    width: "30%",
+    margin: 10,
   },
-  modalContent: {
-    borderRadius: 6,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: 20,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 10,
-  },
+  buttonsRow: { flexDirection: "row" },
+  image: { width: 100, height: 100 },
 });
