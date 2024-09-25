@@ -94,6 +94,13 @@ export default function App() {
             <Button title="Delete All" onPress={handleDeleteAll} />
             ) : null
           }
+          ItemSeparatorComponent={({ leadingItem }) => {
+            if (leadingItem) {
+              return <View style={styles.separatorLine}></View>;
+            } else {
+              return null;
+            }
+          }}
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {goals.map((goalObj) => {
@@ -135,5 +142,10 @@ const styles = StyleSheet.create({
   myGoalsText: {
     color: "purple",
     fontSize: 18,
+  },
+  separatorLine: {
+    height: 3,
+    backgroundColor: "gray", 
+    marginVertical: 10,
   },
 });
