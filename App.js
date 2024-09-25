@@ -85,7 +85,7 @@ export default function App() {
           ListHeaderComponent={
             goals.length > 0 ? (
             <View>
-              <Text style={styles.myGoalsText}>My Goals</Text>
+              <Text style={styles.myGoalsText}>My Goals List</Text>
             </View>
             ) : null
           } 
@@ -142,10 +142,12 @@ const styles = StyleSheet.create({
   myGoalsText: {
     color: "purple",
     fontSize: 18,
+    marginBottom: 5,
   },
   separatorLine: {
     height: 3,
     backgroundColor: "gray", 
-    marginVertical: 10,
+    marginVertical: 5,
+    marginTop: 15,
   },
 });
