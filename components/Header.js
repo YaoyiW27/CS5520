@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import React from "react";
 
-export default function Header({ name }) {
+export default function Header({ name, children }) {
   return (
-    <View>
-      <Text style={styles.text}>Welcome to {name}</Text>
+    <View >
+      <Text style={styles.text}>Welcome to {name}!</Text>
+      {children}
     </View>
   );
 }
@@ -16,6 +17,6 @@ const styles = StyleSheet.create({
     borderColor: "darkmagenta",
     borderWidth: 2,
     padding: 5,
-    marginBottom: 10,
+    marginBotton: 10,
   },
 });
