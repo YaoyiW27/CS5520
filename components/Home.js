@@ -7,6 +7,7 @@ import {
   Text,
   View,
   FlatList,
+  Alert,
 } from "react-native";
 import Header from "./Header";
 import { useState } from "react";
@@ -18,6 +19,7 @@ export default function Home({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
   const appName = "My app!";
+
   // update to receive data
   function handleInputData(data) {
     console.log("App.js ", data);
@@ -29,9 +31,11 @@ export default function Home({ navigation }) {
     // setReceivedData(data);
     setModalVisible(false);
   }
+
   function dismissModal() {
     setModalVisible(false);
   }
+
   function handleGoalDelete(deletedId) {
     setGoals((prevGoals) => {
       return prevGoals.filter((goalObj) => {
@@ -46,6 +50,7 @@ export default function Home({ navigation }) {
     // navigate to GoalDetails and pass goal obj as params
     navigation.navigate("Details", { goalData: pressedGoal });
   }
+
   function deleteAll() {
     Alert.alert("Delete All", "Are you sure you want to delete all goals?", [
       {
