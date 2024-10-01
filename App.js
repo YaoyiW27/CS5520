@@ -16,9 +16,14 @@ export default function App() {
           headerStyle: {backgroundColor: 'purple'},
           headerTintColor: 'white',
           title: "My Goals",
-          }}
+        }}
         />
-        <Stack.Screen name="GoalDetails" component={GoalDetails} />
+        <Stack.Screen 
+          name="GoalDetails" 
+          component={GoalDetails} 
+          options={({ route }) => ({title: route.params.goalData.text  
+        })} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   )
