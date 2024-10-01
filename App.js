@@ -7,6 +7,11 @@ import { Button } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
+const headerOptions = {
+  headerStyle: { backgroundColor: "purple" },
+  headerTintColor: "white",
+};
+
 export default function App() {
   return (
     <NavigationContainer>
@@ -15,8 +20,7 @@ export default function App() {
           name="Home"
           component={Home}
           options={{
-            headerStyle: { backgroundColor: "purple" },
-            headerTintColor: "white",
+            ...headerOptions,
             title: "My Goals",
           }}
         />
@@ -25,6 +29,7 @@ export default function App() {
           component={GoalDetails}
           options={({ route }) => {
             return {
+              ...headerOptions,
               title: route.params ? route.params.goalData.text : "More Details",
               headerRight: () => {
                 return (
