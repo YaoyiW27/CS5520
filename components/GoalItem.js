@@ -1,14 +1,13 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function GoalItem({ goalObj, deleteHandler, pressHandler }) {
+export default function GoalItem({ goalObj, deleteHandler, navigation }) {
   function handleDelete() {
     console.log("deleted");
     deleteHandler(goalObj.id);
   }
   function handlePress() {
-    //pass the goal obj back to Home.js
-    pressHandler(goalObj);
+    navigation.navigate("Details", { goalData: goalObj });
   }
   return (
     <View style={styles.textContainer}>
