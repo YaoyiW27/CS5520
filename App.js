@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, Button } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './components/Home';
@@ -21,8 +21,14 @@ export default function App() {
         <Stack.Screen 
           name="GoalDetails" 
           component={GoalDetails} 
-          options={({ route }) => ({title: route.params.goalData.text  
-        })} 
+          options={({ route }) => {
+            return {
+              title: route.params ? route.params.goalData.text : "More Details",
+              headerRight: () => { 
+                return <Button title="Warning" />
+              }
+            }
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
