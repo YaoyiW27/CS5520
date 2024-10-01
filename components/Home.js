@@ -14,7 +14,7 @@ import { useState } from "react";
 import Input from "./Input";
 import GoalItem from "./GoalItem";
 
-export default function Home( {navigation} ) {
+export default function Home({ navigation, route }) {
   const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
@@ -55,8 +55,9 @@ export default function Home( {navigation} ) {
     ]);
   }
 
-  function handleGoalPress() {  
-    navigation.navigate("GoalDetails");
+  function handleGoalPress(pressedGoal) {  
+    console.log(pressedGoal); 
+    navigation.navigate("GoalDetails", { goalData: pressedGoal });
   }
 
   return (
@@ -82,7 +83,7 @@ export default function Home( {navigation} ) {
           contentContainerStyle={styles.scrollViewContainer}
           data={goals}
           renderItem={({ item }) => {
-            return <GoalItem deleteHandler={handleGoalDelete} pressHandler={() => handleGoalPress(item)} goalObj={item} />;
+            return <GoalItem deleteHandler={handleGoalDelete} pressHandler={handleGoalPress} goalObj={item} />;
           }}
           ListEmptyComponent={
             <View>

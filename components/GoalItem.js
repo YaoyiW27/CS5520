@@ -6,9 +6,10 @@ export default function GoalItem({ goalObj, deleteHandler, pressHandler }) {
     console.log("deleted");
     deleteHandler(goalObj.id);
   }
-  
+
   function handlePress() {
-    pressHandler();
+    // pass goal object back to home.js
+    pressHandler(goalObj);
   } 
 
   return (
