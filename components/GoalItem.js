@@ -6,6 +6,11 @@ export default function GoalItem({ goalObj, deleteHandler, pressHandler }) {
     console.log("deleted");
     deleteHandler(goalObj.id);
   }
+  
+  function handlePress() {
+    pressHandler();
+  } 
+
   return (
     <View style={styles.textContainer}>
       <Text style={styles.text}>{goalObj.text}</Text>
@@ -14,10 +19,6 @@ export default function GoalItem({ goalObj, deleteHandler, pressHandler }) {
     </View>
   );
 }
-
-function handlePress() {
-  pressHandler();
-} 
 
 const styles = StyleSheet.create({
   text: {
