@@ -1,22 +1,25 @@
-import React from 'react'
-import { View, Text, Button } from 'react-native'
-
+import { Button, StyleSheet, Text, View } from "react-native";
+import React from "react";
 
 export default function GoalDetails({ navigation, route }) {
-  console.log(route.params.goalData);
+  console.log(route);
   function moreDetailsHandler() {
-    navigation.navigate("Details");
+    navigation.push("Details");
   }
 
   return (
     <View>
-      <Text>This is details of a goal with text {route.params.goalData.text}.
-        {route.params.goalData.id}
-      </Text>
-      <Button title="More Details" onPress={() => {
-        navigation.navigate("GoalDetails", { goalData: route.params.goalData });
-        }} />
+      {route.params ? (
+        <Text>
+          This is details of a goal with text {route.params.goalData.text} and
+          id {route.params.goalData.id}
+        </Text>
+      ) : (
+        <Text>More details</Text>
+      )}
+      <Button title="More Details" onPress={moreDetailsHandler} />
     </View>
-
-  )
+  );
 }
+
+const styles = StyleSheet.create({});

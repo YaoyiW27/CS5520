@@ -7,34 +7,31 @@ import {
   Text,
   View,
   FlatList,
-  Alert,
 } from "react-native";
 import Header from "./Header";
 import { useState } from "react";
 import Input from "./Input";
 import GoalItem from "./GoalItem";
 
-export default function Home({ navigation, route }) {
+export default function Home({ navigation }) {
   const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
   const appName = "My app!";
-
+  // update to receive data
   function handleInputData(data) {
     console.log("App.js ", data);
     let newGoal = { text: data, id: Math.random() };
-
+    //make a new obj and store the received data as the obj's text property
     setGoals((prevGoals) => {
       return [...prevGoals, newGoal];
     });
     // setReceivedData(data);
     setModalVisible(false);
   }
-
   function dismissModal() {
     setModalVisible(false);
   }
-
   function handleGoalDelete(deletedId) {
     setGoals((prevGoals) => {
       return prevGoals.filter((goalObj) => {
@@ -43,8 +40,14 @@ export default function Home({ navigation, route }) {
     });
   }
 
-  function handleDeleteAll() {
-    Alert.alert("Delete All", "Are you sure you want to delete all goals", [
+  function handleGoalPress(pressedGoal) {
+    //receive the goal obj
+    console.log(pressedGoal);
+    // navigate to GoalDetails and pass goal obj as params
+    navigation.navigate("Details", { goalData: pressedGoal });
+  }
+  function deleteAll() {
+    Alert.alert("Delete All", "Are you sure you want to delete all goals?", [
       {
         text: "Yes",
         onPress: () => {
@@ -53,11 +56,6 @@ export default function Home({ navigation, route }) {
       },
       { text: "No", style: "cancel" },
     ]);
-  }
-
-  function handleGoalPress(pressedGoal) {  
-    console.log(pressedGoal); 
-    navigation.navigate("GoalDetails", { goalData: pressedGoal });
   }
 
   return (
@@ -80,34 +78,33 @@ export default function Home({ navigation, route }) {
       />
       <View style={styles.bottomView}>
         <FlatList
+          ItemSeparatorComponent={
+            <View
+              style={{
+                height: 5,
+                backgroundColor: "gray",
+              }}
+            />
+          }
+          ListEmptyComponent={
+            <Text style={styles.header}>No goals to show</Text>
+          }
+          ListHeaderComponent={
+            goals.length && <Text style={styles.header}>My Goals List</Text>
+          }
+          ListFooterComponent={
+            goals.length && <Button title="Delete all" onPress={deleteAll} />
+          }
           contentContainerStyle={styles.scrollViewContainer}
           data={goals}
           renderItem={({ item }) => {
-            return <GoalItem deleteHandler={handleGoalDelete} pressHandler={handleGoalPress} goalObj={item} />;
-          }}
-          ListEmptyComponent={
-            <View>
-              <Text style={styles.noGoalsText}>No goals to show</Text>
-            </View>
-          }
-          ListHeaderComponent={
-            goals.length > 0 ? (
-            <View>
-              <Text style={styles.myGoalsText}>My Goals List</Text>
-            </View>
-            ) : null
-          } 
-          ListFooterComponent={
-            goals.length > 0 ? (
-            <Button title="Delete All" onPress={handleDeleteAll} />
-            ) : null
-          }
-          ItemSeparatorComponent={({ leadingItem }) => {
-            if (leadingItem) {
-              return <View style={styles.separatorLine}></View>;
-            } else {
-              return null;
-            }
+            return (
+              <GoalItem
+                pressHandler={handleGoalPress}
+                deleteHandler={handleGoalDelete}
+                goalObj={item}
+              />
+            );
           }}
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -134,28 +131,16 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     alignItems: "center",
   },
+
   topView: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  bottomView: { 
-    flex: 4, 
-    backgroundColor: "#dcd" 
-  },
-  noGoalsText: {
-    color: "purple",
-    fontSize: 18,
-  },
-  myGoalsText: {
-    color: "purple",
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  separatorLine: {
-    height: 3,
-    backgroundColor: "gray", 
-    marginVertical: 5,
-    marginTop: 15,
+  bottomView: { flex: 4, backgroundColor: "#dcd" },
+  header: {
+    color: "indigo",
+    fontSize: 25,
+    marginTop: 10,
   },
 });
