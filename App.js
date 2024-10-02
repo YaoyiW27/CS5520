@@ -7,6 +7,7 @@ import {
   Text,
   View,
   FlatList,
+  Alert,
 } from "react-native";
 import Header from "./components/Header";
 import { useState } from "react";
@@ -22,7 +23,7 @@ export default function App() {
   function handleInputData(data) {
     console.log("App.js ", data);
     let newGoal = { text: data, id: Math.random() };
-    
+
     setGoals((prevGoals) => {
       return [...prevGoals, newGoal];
     });
@@ -39,6 +40,18 @@ export default function App() {
       });
     });
   }
+  function handleDeleteAll() {
+    Alert.alert("Delete All", "Are you sure you want to delete all goals", [
+      {
+        text: "Yes",
+        onPress: () => {
+          setGoals([]);
+        },
+      },
+      { text: "No", style: "cancel" },
+    ]);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
@@ -63,6 +76,30 @@ export default function App() {
           data={goals}
           renderItem={({ item }) => {
             return <GoalItem deleteHandler={handleGoalDelete} goalObj={item} />;
+          }}
+          ListEmptyComponent={
+            <View>
+              <Text style={styles.noGoalsText}>No goals to show</Text>
+            </View>
+          }
+          ListHeaderComponent={
+            goals.length > 0 ? (
+            <View>
+              <Text style={styles.myGoalsText}>My Goals List</Text>
+            </View>
+            ) : null
+          } 
+          ListFooterComponent={
+            goals.length > 0 ? (
+            <Button title="Delete All" onPress={handleDeleteAll} />
+            ) : null
+          }
+          ItemSeparatorComponent={({ leadingItem }) => {
+            if (leadingItem) {
+              return <View style={styles.separatorLine}></View>;
+            } else {
+              return null;
+            }
           }}
         />
         {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -89,11 +126,28 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     alignItems: "center",
   },
-
   topView: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  bottomView: { flex: 4, backgroundColor: "#dcd" },
+  bottomView: { 
+    flex: 4, 
+    backgroundColor: "#dcd" 
+  },
+  noGoalsText: {
+    color: "purple",
+    fontSize: 18,
+  },
+  myGoalsText: {
+    color: "purple",
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  separatorLine: {
+    height: 3,
+    backgroundColor: "gray", 
+    marginVertical: 5,
+    marginTop: 15,
+  },
 });
