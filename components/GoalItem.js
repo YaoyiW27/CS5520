@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View, Pressable } from "react-native";
 import React from "react";
 
 export default function GoalItem({ goalObj, deleteHandler, navigation }) {
@@ -6,15 +6,12 @@ export default function GoalItem({ goalObj, deleteHandler, navigation }) {
     console.log("deleted");
     deleteHandler(goalObj.id);
   }
-  function handlePress() {
-    navigation.navigate("Details", { goalData: goalObj });
-  }
+
   return (
-    <View style={styles.textContainer}>
+    <Pressable style={styles.textContainer} onPress={() => navigation.navigate("Details", { goalData: goalObj }) }>
       <Text style={styles.text}>{goalObj.text}</Text>
       <Button title="X" color="grey" onPress={handleDelete} />
-      <Button title="i" color="grey" onPress={handlePress} />
-    </View>
+    </Pressable>
   );
 }
 
