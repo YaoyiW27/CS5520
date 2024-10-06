@@ -31,16 +31,14 @@ export default function App() {
             return {
               ...headerOptions,
               title: route.params ? route.params.goalData.text : "More Details",
-              headerRight: () => {
-                return (
-                  <Button
-                    title="Warning"
-                    onPress={() => {
-                      console.log("warning");
-                    }}
-                  />
-                );
-              },
+              headerRight: () => (
+                <Button
+                  title="Warning"
+                  onPress={() => {
+                    console.log("warning");
+                  }}
+                />
+              ),
             };
           }}
         />
