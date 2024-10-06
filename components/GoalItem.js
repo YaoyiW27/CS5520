@@ -8,7 +8,11 @@ export default function GoalItem({ goalObj, deleteHandler, navigation }) {
   }
 
   return (
-    <Pressable style={styles.textContainer} onPress={() => navigation.navigate("Details", { goalData: goalObj }) }>
+    <Pressable 
+      style={styles.textContainer} 
+      onPress={() => navigation.navigate("Details", { goalData: goalObj })}
+      android_ripple={{ color: "purple", borderless: true }}
+      >
       <Text style={styles.text}>{goalObj.text}</Text>
       <Button title="X" color="grey" onPress={handleDelete} />
     </Pressable>
