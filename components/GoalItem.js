@@ -1,5 +1,6 @@
 import { Button, StyleSheet, Text, View, Pressable } from "react-native";
 import React from "react";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function GoalItem({ goalObj, deleteHandler, navigation }) {
   function handleDelete() {
@@ -17,7 +18,7 @@ export default function GoalItem({ goalObj, deleteHandler, navigation }) {
       android_ripple={{ color: "purple", borderless: true }}
       >
       <Text style={styles.text}>{goalObj.text}</Text>
-      <Button title="X" color="grey" onPress={handleDelete} />
+      <MaterialIcons name="delete-outline" size={24} color="black" onPress={handleDelete} />
     </Pressable>
   );
 }

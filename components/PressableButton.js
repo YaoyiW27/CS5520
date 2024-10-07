@@ -4,7 +4,7 @@ import { Pressable } from 'react-native';
 function PressableButton({children, pressedFunction}) {
   return (
     <Pressable onPress={pressedFunction}>
-        {children}
+      {children}
     </Pressable>
   )
 }
