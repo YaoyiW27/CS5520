@@ -1,0 +1,10 @@
+import React from 'react'
+import { Pressable } from 'react-native';
+
+export default function PressableButton({children, pressedFunction}) {
+  return (
+    <Pressable onPress={pressedFunction}>
+      {children}
+    </Pressable>
+  )
+}
