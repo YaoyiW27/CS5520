@@ -1,8 +1,8 @@
-import { Button, StyleSheet, Text, View, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, Pressable, Alert } from "react-native";
 import React from "react";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function GoalItem({ goalObj, deleteHandler, navigation }) {
+export default function GoalItem({ goalObj, deleteHandler, navigation, onHighlight, onUnhighlight }) {
   function handleDelete() {
     console.log("Deleted goal with ID:", goalObj.id);
     deleteHandler(goalObj.id);
@@ -32,7 +32,13 @@ export default function GoalItem({ goalObj, deleteHandler, navigation }) {
         styles.textContainer,
         pressed && styles.pressedStyle,
       ]}
-      onPress={() => navigation.navigate("Details", { goalData: goalObj })}
+      onPress={() => {
+        navigation.navigate("Details", { goalData: goalObj });
+        onHighlight(); 
+      }}
+      onPressOut={() => {
+        onUnhighlight(); 
+      }}
       onLongPress={handleLongPress}
       android_ripple={{ color: "purple", borderless: true }}
     >
@@ -41,7 +47,7 @@ export default function GoalItem({ goalObj, deleteHandler, navigation }) {
         name="delete-outline" 
         size={24} 
         color="black" 
-        onPress={handleLongPress} // Change here to use the alert function
+        onPress={handleLongPress} 
       />
     </Pressable>
   );
