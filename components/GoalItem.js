@@ -1,20 +1,25 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View, Pressable } from "react-native";
 import React from "react";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function GoalItem({ goalObj, deleteHandler, navigation }) {
   function handleDelete() {
     console.log("deleted");
     deleteHandler(goalObj.id);
   }
-  function handlePress() {
-    navigation.navigate("Details", { goalData: goalObj });
-  }
+
   return (
-    <View style={styles.textContainer}>
+    <Pressable 
+      style={({ pressed }) => [
+        styles.textContainer,
+        pressed && styles.pressedStyle,
+      ]}
+      onPress={() => navigation.navigate("Details", { goalData: goalObj })}
+      android_ripple={{ color: "purple", borderless: true }}
+      >
       <Text style={styles.text}>{goalObj.text}</Text>
-      <Button title="X" color="grey" onPress={handleDelete} />
-      <Button title="i" color="grey" onPress={handlePress} />
-    </View>
+      <MaterialIcons name="delete-outline" size={24} color="black" onPress={handleDelete} />
+    </Pressable>
   );
 }
 
@@ -30,5 +35,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     flexDirection: "row",
     alignItems: "center",
+  },
+  pressedStyle: {
+    backgroundColor: "blue",
   },
 });
