@@ -1,44 +1,51 @@
+import { StyleSheet, Text, View, Button } from "react-native";
 import React from "react";
 import Home from "./components/Home";
 import GoalDetails from "./components/GoalDetails";
-import PressableButton from "./components/PressableButton"; 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
-
-const headerOptions = {
-  headerStyle: { backgroundColor: "purple" },
-  headerTintColor: "white",
-};
+// console.log(Stack);
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: "purple" },
+          headerTintColor: "white",
+        }}
+      >
         <Stack.Screen
           name="Home"
           component={Home}
           options={{
-            ...headerOptions,
-            title: "My Goals",
+            headerStyle: { backgroundColor: "purple" },
+            headerTintColor: "white",
+            title: "My goals",
           }}
         />
         <Stack.Screen
           name="Details"
           component={GoalDetails}
           options={({ route }) => ({
-            ...headerOptions,
             title: route.params ? route.params.goalData.text : "More Details",
-            headerRight: () => (
-              <PressableButton pressedFunction={() => console.log("warning")}>
-                <Text style={{ color: 'white', fontSize: 16 }}>Warning</Text>
-              </PressableButton>
-            ),
+            headerRight: () => {
+              return (
+                <Button
+                  title="Warning"
+                  onPress={() => {
+                    console.log("warning");
+                  }}
+                />
+              );
+            },
           })}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({});

@@ -1,30 +1,33 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import PressableButton from "./PressableButton";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from '@expo/vector-icons/Entypo';
 
 export default function GoalDetails({ navigation, route }) {
+  // console.log(route.params.goalData);
+
   const [warning, setWarning] = useState(false);
-  function warningHandler() {
+
+  const handleWarning = () => {
     setWarning(true);
-    navigation.setOptions({ title: "Warning!" });
-  }
+    navigation.setOptions({
+      title: "Warning",
+    });
+  };
+
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => {
-        return (
-          // <Button title="Warning" color="white" onPress={warningHandler} />
-          <PressableButton
-            pressedHandler={warningHandler}
-            componentStyle={{ backgroundColor: "purple" }}
-            pressedStyle={{ opacity: 0.5, backgroundColor: "purple" }}
-          >
-            <AntDesign name="warning" size={24} color="white" />
-          </PressableButton>
-        );
-      },
+      headerRight: () => (
+        <PressableButton
+          onPress={handleWarning}
+          componentStyle={styles.warningStyle}
+          pressedStyle={styles.warningButtonPressed}
+        >
+          <Entypo name="warning" size={24} color="red" />
+        </PressableButton>
+      ),
     });
-  }, []);
+  }, [navigation, handleWarning]);
 
   function moreDetailsHandler() {
     navigation.push("Details");
@@ -38,7 +41,7 @@ export default function GoalDetails({ navigation, route }) {
           id {route.params.goalData.id}
         </Text>
       ) : (
-        <Text style={warning && styles.warningStyle}>More details</Text>
+        <Text style={warning && styles.warningStyle}>More Details</Text>
       )}
       <Button title="More Details" onPress={moreDetailsHandler} />
     </View>
@@ -48,5 +51,9 @@ export default function GoalDetails({ navigation, route }) {
 const styles = StyleSheet.create({
   warningStyle: {
     color: "red",
+  },
+
+  warningButtonPressed: {
+    backgroundColor: "yellow",
   },
 });
