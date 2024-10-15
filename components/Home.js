@@ -82,7 +82,8 @@ export default function Home({ navigation, route }) {
       {
         text: "Yes",
         onPress: () => {
-          setGoals([]);
+          // setGoals([]);
+          deleteFromDB("goals");
         },
       },
       {
