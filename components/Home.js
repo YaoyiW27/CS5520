@@ -12,20 +12,40 @@ import {
 } from "react-native";
 import Header from "./Header";
 import Input from "./Input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GoalItem from "./GoalItem";
 import PressableButton from "./PressableButton";
+import { database } from "../Firebase/firebaseSetup";
+import { writeToDB } from "../Firebase/firestoreHelper";
+import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function Home({ navigation, route }) {
+  // writeToDB({name: "yy"}, "goals");
+  // console.log(database);
   const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
 
   const appName = "My awesome app";
+
+  useEffect(() => {
+    let newArray = [];
+    onSnapshot(collection(database, "goals"), (querySnapshot) => { 
+      querySnapshot.forEach((docSnapshot) => {
+      console.log(docSnapshot.data());
+      newArray.push({ id: docSnapshot.id, ...docSnapshot.data()
+    });
+    setGoals(newArray);
+    });
+  });
+  }, []);
+
   function handleInputData(data) {
     console.log("App.js ", data);
 
-    let newGoal = { text: data, id: Math.random() };
+    let newGoal = { text: data };
+    writeToDB("goals", newGoal);
+    // console.log("App.js knows new goal is added");
     setGoals((prevGoals) => {
       return [...prevGoals, newGoal];
     });
