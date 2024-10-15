@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import GoalItem from "./GoalItem";
 import PressableButton from "./PressableButton";
 import { database } from "../Firebase/firebaseSetup";
-import { writeToDB, deleteFromDB } from "../Firebase/firestoreHelper";
+import { writeToDB, deleteFromDB, deleteAll } from "../Firebase/firestoreHelper";
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function Home({ navigation, route }) {
@@ -29,15 +29,16 @@ export default function Home({ navigation, route }) {
   const appName = "My awesome app";
 
   useEffect(() => {
-    let newArray = [];
     onSnapshot(collection(database, "goals"), (querySnapshot) => { 
-      querySnapshot.forEach((docSnapshot) => {
-      console.log(docSnapshot.data());
-      newArray.push({ id: docSnapshot.id, ...docSnapshot.data()
+      let newArray = [];
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach((docSnapshot) => {
+          console.log(docSnapshot.data());
+          newArray.push({ id: docSnapshot.id, ...docSnapshot.data() });
+        });
+      }
+      setGoals(newArray);
     });
-    setGoals(newArray);
-    });
-  });
   }, []);
 
   function handleInputData(data) {
@@ -46,9 +47,9 @@ export default function Home({ navigation, route }) {
     let newGoal = { text: data };
     writeToDB("goals", newGoal);
     // console.log("App.js knows new goal is added");
-    setGoals((prevGoals) => {
-      return [...prevGoals, newGoal];
-    });
+    // setGoals((prevGoals) => {
+    //   return [...prevGoals, newGoal];
+    // });
 
     setReceivedData(data);
     setModalVisible(false);
@@ -83,7 +84,7 @@ export default function Home({ navigation, route }) {
         text: "Yes",
         onPress: () => {
           // setGoals([]);
-          deleteFromDB("goals");
+          deleteAll("goals");
         },
       },
       {
