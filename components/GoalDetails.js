@@ -1,35 +1,47 @@
 import { Button, StyleSheet, Text, View } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useEffect, useState } from "react";
+import PressableButton from "./PressableButton";
+import Entypo from '@expo/vector-icons/Entypo';
 
 export default function GoalDetails({ navigation, route }) {
-  const [isWarning, setIsWarning] = useState(false);
+  // console.log(route.params.goalData);
 
-  console.log(route);
+  const [warning, setWarning] = useState(false);
+
+  const handleWarning = () => {
+    setWarning(true);
+    navigation.setOptions({
+      title: "Warning",
+    });
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <PressableButton
+          onPress={handleWarning}
+          componentStyle={styles.warningStyle}
+          pressedStyle={styles.warningButtonPressed}
+        >
+          <Entypo name="warning" size={24} color="red" />
+        </PressableButton>
+      ),
+    });
+  }, [navigation, handleWarning]);
+
   function moreDetailsHandler() {
     navigation.push("Details");
   }
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: isWarning ? "Warning!" : route.params ? route.params.goalData.text : "More Details",
-      headerRight: () => (
-        <Button
-          title="Warning"
-          onPress={() => setIsWarning(true)}
-        />
-      ),
-    })
-  }, [navigation, isWarning, route.params]);
-
   return (
     <View>
       {route.params ? (
-        <Text style={[styles.text, isWarning && styles.warningText]}>
+        <Text style={warning && styles.warningStyle}>
           This is details of a goal with text {route.params.goalData.text} and
           id {route.params.goalData.id}
         </Text>
       ) : (
-        <Text style={[styles.text, isWarning && styles.warningText]}>More details</Text>
+        <Text style={warning && styles.warningStyle}>More Details</Text>
       )}
       <Button title="More Details" onPress={moreDetailsHandler} />
     </View>
@@ -37,11 +49,11 @@ export default function GoalDetails({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: 18,
-    color: "black",
-  },
-  warningText: {
+  warningStyle: {
     color: "red",
+  },
+
+  warningButtonPressed: {
+    backgroundColor: "yellow",
   },
 });

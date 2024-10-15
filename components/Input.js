@@ -1,97 +1,119 @@
 import {
-  Alert,
-  Button,
-  Modal,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  TextInput,
+  Button,
+  Modal,
+  Alert,
   Image,
 } from "react-native";
-import React, { useState } from "react";
+import React from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Input({
-  textInputFocus,
+  autoFocus,
   inputHandler,
-  isModalVisible,
-  dismissModal,
+  modalVisible,
+  cancelHandler,
 }) {
   const [text, setText] = useState("");
-  const [blur, setBlur] = useState(false);
-  const minimumChar = 3;
+  const [message, setMessage] = useState("");
+  const [showCount, setShowCount] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
+
+  useEffect(() => {
+    if (text.length >= 3) {
+      setConfirmed(true);
+    } else {
+      setConfirmed(false);
+    }
+  });
+
   function handleConfirm() {
     // console.log(text);
     inputHandler(text);
     setText("");
   }
+
+  const handleBlur = () => {
+    if (text.length >= 3) {
+      setMessage("Thank you");
+    } else {
+      setMessage("Please type more than 3 characters");
+    }
+    setShowCount(false);
+  };
+
   function handleCancel() {
-    // hide the modal
-    Alert.alert("Cancel", "Are you sure you want to cancel", [
-      { text: "cancel", style: "cancel" },
+    Alert.alert("isCancel", "Do you want to cancel?", [
       {
-        text: "ok",
+        text: "Cancel",
         onPress: () => {
+          console.log("Cancel Pressed");
+        },
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          cancelHandler();
           setText("");
-          dismissModal();
         },
       },
     ]);
   }
+
   return (
-    <Modal animationType="slide" visible={isModalVisible} transparent={true}>
-      <View style={styles.container}>
-        <View style={styles.modalContainer}>
+    <Modal visible={modalVisible} animationType="slide" transparent={true}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
           <Image
+            style={styles.image}
+            source={require("../assets/target.png")}
+            alt={"Image of a an arrow"}
+          />
+          <Image
+            style={styles.image}
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png",
             }}
-            style={styles.image}
-            alt="Image of a an arrow"
+            alt={"Image of a an arrow"}
           />
-          <Image
-            source={require("../assets/target.png")}
-            style={styles.image}
-            alt="Image of a an arrow"
-          />
-
           <TextInput
-            autoFocus={textInputFocus}
+            style={styles.input}
+            ref={inputRef}
             placeholder="Type something"
-            autoCorrect={true}
             keyboardType="default"
             value={text}
-            style={styles.input}
-            onChangeText={(changedText) => {
+            onChangeText={function (changedText) {
               setText(changedText);
+              setShowCount(changedText.length > 0);
             }}
-            onBlur={() => {
-              setBlur(true);
-            }}
-            onFocus={() => {
-              setBlur(false);
-            }}
+            onBlur={handleBlur}
           />
-
-          {blur ? (
-            text.length >= minimumChar ? (
-              <Text>Thank you</Text>
-            ) : (
-              <Text>Please type more than {minimumChar} characters</Text>
-            )
-          ) : (
-            text && <Text>{text.length}</Text>
+          {showCount && (
+            <Text style={{ color: "gray", marginTop: 5 }}>
+              Character count: {text.length}
+            </Text>
           )}
-          <View style={styles.buttonsRow}>
-            <View style={styles.buttonContainer}>
-              <Button title="Cancel" onPress={handleCancel} />
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                disabled={text.length < minimumChar}
-                title="Confirm"
-                onPress={handleConfirm}
-              />
-            </View>
+          {message && (
+            <Text style={{ color: "gray", marginTop: 5 }}>{message}</Text>
+          )}
+          <View style={styles.button}>
+            <Button onPress={handleCancel} title="Cancel" />
+            <Button
+              onPress={handleConfirm}
+              disabled={!confirmed}
+              title="Confirm"
+            />
           </View>
         </View>
       </View>
@@ -100,27 +122,30 @@ export default function Input({
 }
 
 const styles = StyleSheet.create({
-  container: {
+  modalContainer: {
     flex: 1,
-    // backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
-  input: {
-    borderColor: "purple",
-    borderWidth: 2,
-    padding: 5,
-    marginVertical: 10,
+  input: { borderColor: "purple", borderWidth: 2, padding: 5, color: "purple" },
+  button: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "80%",
   },
-  modalContainer: {
-    borderRadius: 6,
-    backgroundColor: "#999",
+  modalContent: {
+    backgroundColor: "darkgray",
     alignItems: "center",
+    justifyContent: "center",
+    height: "40%",
+    width: "60%",
+    borderRadius: 20,
+    padding: 10,
+    marginTop: 50,
   },
-  buttonContainer: {
-    width: "30%",
-    margin: 10,
+  image: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
   },
-  buttonsRow: { flexDirection: "row" },
-  image: { width: 100, height: 100 },
 });
