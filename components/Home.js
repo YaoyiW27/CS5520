@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import GoalItem from "./GoalItem";
 import PressableButton from "./PressableButton";
 import { database } from "../Firebase/firebaseSetup";
-import { writeToDB } from "../Firebase/firestoreHelper";
+import { writeToDB, deleteFromDB } from "../Firebase/firestoreHelper";
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function Home({ navigation, route }) {
@@ -73,6 +73,8 @@ export default function Home({ navigation, route }) {
       });
     });
   }
+
+  deleteFromDB("goals", deletedId);
 
   function deleteAllGoals() {
     Alert.alert("Delete all", "Are you sure?", [
