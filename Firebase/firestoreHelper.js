@@ -8,6 +8,9 @@ export async function writeToDB(collectionName, data) {
     console.log("write to db", err);
   }
 }
+// lab6 Q1: We use addDoc because there is no need to specify the document ID. 
+// Firestore will automatically generate a unique ID for the document.
+// However, if we want to specify the document ID, we can use setDoc instead.
 
 export async function deleteFromDB(collectionName, docId){
   try {
