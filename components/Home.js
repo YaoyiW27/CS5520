@@ -29,7 +29,7 @@ export default function Home({ navigation, route }) {
   const appName = "My awesome app";
 
   useEffect(() => {
-    onSnapshot(collection(database, "goals"), (querySnapshot) => { 
+    const unsbscribe = onSnapshot(collection(database, "goals"), (querySnapshot) => {
       let newArray = [];
       if (!querySnapshot.empty) {
         querySnapshot.forEach((docSnapshot) => {
@@ -39,6 +39,9 @@ export default function Home({ navigation, route }) {
       }
       setGoals(newArray);
     });
+    return () => {
+      unsbscribe();
+    };
   }, []);
 
   function handleInputData(data) {
