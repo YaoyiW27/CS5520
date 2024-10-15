@@ -43,3 +43,7 @@ export async function addWarningToGoal(docId) {
     console.log("Error updating document with warning: ", err);
   }
 }
+
+// lab6 Q3: We should use updateDoc instead of setDoc with {merge: true} because
+// updateDoc is used to update an existing document with specific fields,
+// while setDoc with {merge: true} is used to create a new document or overwrite an existing document with specific fields.
