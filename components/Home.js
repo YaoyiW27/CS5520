@@ -72,9 +72,10 @@ export default function Home({ navigation, route }) {
         return goalObj.id !== deletedId;
       });
     });
+
+    deleteFromDB("goals", deletedId);
   }
 
-  deleteFromDB("goals", deletedId);
 
   function deleteAllGoals() {
     Alert.alert("Delete all", "Are you sure?", [
