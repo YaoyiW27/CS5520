@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native'
-import React, { useEffect , useState
- } from 'react'
+import React, { useEffect , useState } from 'react'
+import { writeToDB } from '../Firebase/firestoreHelper';
 
-export default function GoalUsers() {
+export default function GoalUsers( {id}) {
     const [users, setUsers] = useState([]);
 
     useEffect( () => {
@@ -21,13 +21,14 @@ export default function GoalUsers() {
             // extract data
             const data = await response.json();
             // set the users state variable
+            data.forEach((user) => writeToDB(user, `goals/${id}/users`));
             setUsers (
-               data.map ((user)=> {
+               data.map ((user) => {
                 return user.name;
                })
             );
-            }catch(err)
-                {console.log("fetch user data", err);
+            } catch (err) {
+                console.log("fetch user data", err);
             }
             fetchData();
         }
