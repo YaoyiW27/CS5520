@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import PressableButton from "./PressableButton";
 import Entypo from '@expo/vector-icons/Entypo';
 import { addWarningToGoal } from "../Firebase/firestoreHelper";
+import GoalUsers from "./GoalUsers";
 
 export default function GoalDetails({ navigation, route }) {
   // console.log(route.params.goalData);
@@ -40,6 +41,7 @@ export default function GoalDetails({ navigation, route }) {
 
   return (
     <View>
+      <GoalUsers />
       {route.params ? (
         <Text style={warning && styles.warningStyle}>
           This is details of a goal with text {route.params.goalData.text} and
@@ -49,6 +51,7 @@ export default function GoalDetails({ navigation, route }) {
         <Text style={warning && styles.warningStyle}>More Details</Text>
       )}
       <Button title="More Details" onPress={moreDetailsHandler} />
+      <GoalUsers />
     </View>
   );
 }
