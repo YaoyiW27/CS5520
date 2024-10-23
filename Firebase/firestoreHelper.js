@@ -47,3 +47,18 @@ export async function addWarningToGoal(docId) {
 // lab6 Q3: We should use updateDoc instead of setDoc with {merge: true} because
 // updateDoc is used to update an existing document with specific fields,
 // while setDoc with {merge: true} is used to create a new document or overwrite an existing document with specific fields.
+
+export async function getAllDocuemnts(collectionName) {
+  try {
+  const querySnapshot = await getDocs(collection(database, collectionName));
+  const data = [];
+  if (!querySnapshot.empty) {
+      querySnapshot.forEach((docSnap) => {
+        data.push(docSnap.data());
+    });
+  }
+  return data;
+  } catch (err) {
+  console.log("get all docs", err);
+  }
+}
