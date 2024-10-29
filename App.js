@@ -46,14 +46,14 @@ export default function App() {
         />
         <Stack.Screen
           name="Signup"
-          component={Signup} // Corrected reference to component
+          component={Signup} 
           options={{
             title: "Sign up",
           }}
         />
         <Stack.Screen
           name="Login"
-          component={Login} // Corrected reference to component
+          component={Login} 
           options={{
             title: "Login",
           }}

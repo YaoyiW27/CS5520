@@ -14,10 +14,8 @@ export default function Login({ navigation }) {
       Alert.alert('Invalid Password', 'Password cannot be empty.');
       return;
     }
-    // Placeholder for authentication logic
     console.log('Logging in:', email);
-    // Navigate to Home after successful login (replace this with real logic)
-    navigation.navigate('Home');
+    navigation.navigate('Home'); 
   };
 
   return (
@@ -40,10 +38,7 @@ export default function Login({ navigation }) {
         onChangeText={setPassword}
       />
       <Button title="Log In" onPress={handleLogin} />
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('Signup')}
-      >
+      <Text style={styles.link} onPress={() => navigation.navigate('Signup')}>
         New User? Create an account
       </Text>
     </View>

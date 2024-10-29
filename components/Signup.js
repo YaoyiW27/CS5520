@@ -16,7 +16,6 @@ export default function Signup({ navigation }) {
       return;
     }
     console.log('User registered:', email);
-    // Navigate to Login screen after registration
     navigation.navigate('Login');
   };
 
@@ -48,10 +47,7 @@ export default function Signup({ navigation }) {
         onChangeText={setConfirmPassword}
       />
       <Button title="Register" onPress={handleRegister} />
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('Login')}
-      >
+      <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
         Already Registered? Login
       </Text>
     </View>
