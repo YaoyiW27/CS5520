@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Firebase/firebaseSetup'; 
 
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match!');
       return;
@@ -15,8 +17,13 @@ export default function Signup({ navigation }) {
       Alert.alert('Error', 'Invalid email address!');
       return;
     }
-    console.log('User registered:', email);
-    navigation.navigate('Login');
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User registered:', email);
+      navigation.navigate('Login'); 
+    } catch (error) {
+      Alert.alert('Registration Failed', error.message);
+    }
   };
 
   return (
