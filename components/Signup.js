@@ -1,62 +1,81 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../Firebase/firebaseSetup'; 
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { auth } from "../Firebase/firebaseSetup";
 
 export default function Signup({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match!');
-      return;
-    }
-    if (!email.includes('@')) {
-      Alert.alert('Error', 'Invalid email address!');
-      return;
-    }
+  const loginHandler = () => {
+    //take user to login
+    navigation.replace("Login");
+  };
+  const signupHandler = async () => {
+    // do some validation:
+    //1. email, password and confirmpassword are not empty
+    //2.
+    //create a new user using createUserWithEmailAndPassword
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log('User registered:', email);
-      navigation.navigate('Login'); 
-    } catch (error) {
-      Alert.alert('Registration Failed', error.message);
+      if (
+        email.length === 0 ||
+        password.length === 0 ||
+        confirmPassword.length === 0
+      ) {
+        Alert.alert("All fields should be provided");
+        return;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert("password and confirm password don't match");
+        return;
+      }
+      // any other check you could do to make sure we have valid data
+      //e.g. regex for email, password length,...
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(userCred.user);
+    } catch (err) {
+      console.log("sign up ", err);
+      Alert.alert(err.message);
     }
   };
-
   return (
     <View style={styles.container}>
-      <Text>Email Address</Text>
+      <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        onChangeText={(changedText) => {
+          setEmail(changedText);
+        }}
       />
-      <Text>Password</Text>
+      <Text style={styles.label}>Password</Text>
       <TextInput
         style={styles.input}
+        secureTextEntry={true}
         placeholder="Password"
-        secureTextEntry
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(changedText) => {
+          setPassword(changedText);
+        }}
       />
-      <Text>Confirm Password</Text>
+      <Text style={styles.label}>Confirm Password</Text>
       <TextInput
         style={styles.input}
+        secureTextEntry={true}
         placeholder="Confirm Password"
-        secureTextEntry
         value={confirmPassword}
-        onChangeText={setConfirmPassword}
+        onChangeText={(changedText) => {
+          setConfirmPassword(changedText);
+        }}
       />
-      <Button title="Register" onPress={handleRegister} />
-      <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
-        Already Registered? Login
-      </Text>
+      <Button title="Register" onPress={signupHandler} />
+      <Button title="Already Registered? Login" onPress={loginHandler} />
     </View>
   );
 }
@@ -64,19 +83,18 @@ export default function Signup({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    // alignItems: "stretch",
+    justifyContent: "center",
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+    borderColor: "#552055",
+    borderWidth: 2,
+    width: "90%",
+    margin: 5,
+    padding: 5,
   },
-  link: {
-    color: 'blue',
-    marginTop: 8,
-    textAlign: 'center',
+  label: {
+    marginLeft: 10,
   },
 });
