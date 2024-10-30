@@ -4,12 +4,12 @@ import React from "react";
 export default function PressableButton({
   children,
   componentStyle,
-  onPress,
+  pressedHandler,
   pressedStyle,
 }) {
   return (
     <Pressable
-      onPress={onPress}
+      onPress={pressedHandler}
       style={({ pressed }) => {
         return [styles.defaultStyle, componentStyle, pressed && pressedStyle];
       }}
