@@ -3,18 +3,28 @@ import { View, Button, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function ImageManager() {
-  const [response, requestPermission] = ImagePicker.useCameraPermissions(); // Request camera permission
+  // Get permission response and function to request permission
+  const [response, requestPermission] = ImagePicker.useCameraPermissions();
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // Function to verify camera permissions
+  const verifyPermission = async () => {
+    // Check if permission is already granted
+    if (response.granted) {
+      return true;
+    }
+    // Request permission if not granted
+    const permissionResult = await requestPermission();
+    return permissionResult.granted;
+  };
 
   // Function to handle taking an image, with permission check
   const takeImageHandler = async () => {
-    // Check if permission is granted
-    if (!response.granted) {
-      const permissionResult = await requestPermission();
-      if (!permissionResult.granted) {
-        Alert.alert("Permission required", "Camera access is needed to take a photo.");
-        return;
-      }
+    // Call verifyPermission and check if permission is granted
+    const hasPermission = await verifyPermission();
+    if (!hasPermission) {
+      Alert.alert("Permission required", "Camera access is needed to take a photo.");
+      return;
     }
 
     // If permission is granted, launch the camera
@@ -26,7 +36,7 @@ export default function ImageManager() {
 
       // If the user didn't cancel, save the image URI in state
       if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
+        setSelectedImage(result.assets[0].uri); // Store the URI of the captured image
       } else {
         Alert.alert('Camera canceled');
       }
