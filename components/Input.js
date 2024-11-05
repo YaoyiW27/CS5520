@@ -8,8 +8,8 @@ import {
   Alert,
   Image,
 } from "react-native";
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ImageManager from "./ImageManager"; // Import ImageManager component
 
 export default function Input({
   autoFocus,
@@ -23,42 +23,36 @@ export default function Input({
   const [confirmed, setConfirmed] = useState(false);
   const inputRef = useRef(null);
 
+  // Automatically focus on the input field if autoFocus is true
   useEffect(() => {
     if (autoFocus && inputRef.current) {
       inputRef.current.focus();
     }
   }, [autoFocus]);
 
+  // Confirm button is enabled if text length is 3 or more
   useEffect(() => {
-    if (text.length >= 3) {
-      setConfirmed(true);
-    } else {
-      setConfirmed(false);
-    }
-  });
+    setConfirmed(text.length >= 3);
+  }, [text]);
 
+  // Handler for confirm button
   function handleConfirm() {
-    // console.log(text);
     inputHandler(text);
     setText("");
   }
 
+  // Handler for when TextInput loses focus
   const handleBlur = () => {
-    if (text.length >= 3) {
-      setMessage("Thank you");
-    } else {
-      setMessage("Please type more than 3 characters");
-    }
+    setMessage(text.length >= 3 ? "Thank you" : "Please type more than 3 characters");
     setShowCount(false);
   };
 
+  // Handler for cancel button with alert
   function handleCancel() {
     Alert.alert("isCancel", "Do you want to cancel?", [
       {
         text: "Cancel",
-        onPress: () => {
-          console.log("Cancel Pressed");
-        },
+        onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
       {
@@ -75,25 +69,28 @@ export default function Input({
     <Modal visible={modalVisible} animationType="slide" transparent={true}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+          {/* Display static images */}
           <Image
             style={styles.image}
             source={require("../assets/target.png")}
-            alt={"Image of a an arrow"}
+            alt={"Image of an arrow"}
           />
           <Image
             style={styles.image}
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png",
             }}
-            alt={"Image of a an arrow"}
+            alt={"Image of an arrow"}
           />
+
+          {/* TextInput for user input with character count */}
           <TextInput
             style={styles.input}
             ref={inputRef}
             placeholder="Type something"
             keyboardType="default"
             value={text}
-            onChangeText={function (changedText) {
+            onChangeText={(changedText) => {
               setText(changedText);
               setShowCount(changedText.length > 0);
             }}
@@ -107,6 +104,8 @@ export default function Input({
           {message && (
             <Text style={{ color: "gray", marginTop: 5 }}>{message}</Text>
           )}
+
+          {/* Buttons for cancel and confirm */}
           <View style={styles.button}>
             <Button onPress={handleCancel} title="Cancel" />
             <Button
@@ -115,6 +114,9 @@ export default function Input({
               title="Confirm"
             />
           </View>
+
+          {/* Render ImageManager component for camera functionality */}
+          <ImageManager />
         </View>
       </View>
     </Modal>
@@ -137,8 +139,8 @@ const styles = StyleSheet.create({
     backgroundColor: "darkgray",
     alignItems: "center",
     justifyContent: "center",
-    height: "40%",
-    width: "60%",
+    height: "60%", // Adjusted height to fit the camera button and image display
+    width: "80%",
     borderRadius: 20,
     padding: 10,
     marginTop: 50,
