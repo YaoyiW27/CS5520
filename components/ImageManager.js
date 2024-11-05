@@ -2,41 +2,37 @@ import React, { useState } from 'react';
 import { View, Button, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function ImageManager() {
-  // Get permission response and function to request permission
+export default function ImageManager({ onImageTaken }) { // Accept the callback prop
   const [response, requestPermission] = ImagePicker.useCameraPermissions();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // State to store the URI of the captured image
 
-  // Function to verify camera permissions
+  // Function to check camera permissions
   const verifyPermission = async () => {
-    // Check if permission is already granted
     if (response.granted) {
-      return true;
+      return true; // Permission is already granted
     }
-    // Request permission if not granted
-    const permissionResult = await requestPermission();
+    const permissionResult = await requestPermission(); // Request permission if not granted
     return permissionResult.granted;
   };
 
-  // Function to handle taking an image, with permission check
+  // Function to handle capturing an image with permission check
   const takeImageHandler = async () => {
-    // Call verifyPermission and check if permission is granted
     const hasPermission = await verifyPermission();
     if (!hasPermission) {
       Alert.alert("Permission required", "Camera access is needed to take a photo.");
       return;
     }
 
-    // If permission is granted, launch the camera
     try {
       const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true, // Allows user to edit the image before saving
-        quality: 1, // Sets the image quality to the highest
+        allowsEditing: true,
+        quality: 1,
       });
 
-      // If the user didn't cancel, save the image URI in state
       if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri); // Store the URI of the captured image
+        const imageUri = result.assets[0].uri; // Get the URI of the image
+        setSelectedImage(imageUri); // Store URI for preview
+        onImageTaken(imageUri); // Pass URI back to Input.js
       } else {
         Alert.alert('Camera canceled');
       }
@@ -49,7 +45,6 @@ export default function ImageManager() {
   return (
     <View style={styles.container}>
       <Button title="Take a Photo" onPress={takeImageHandler} />
-      {/* Display the captured image if available */}
       {selectedImage && (
         <Image source={{ uri: selectedImage }} style={styles.image} />
       )}

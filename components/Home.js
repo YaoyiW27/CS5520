@@ -5,10 +5,8 @@ import {
   View,
   Button,
   SafeAreaView,
-  ScrollView,
   FlatList,
   Alert,
-  Pressable,
 } from "react-native";
 import Header from "./Header";
 import Input from "./Input";
@@ -20,45 +18,38 @@ import { writeToDB, deleteFromDB, deleteAll } from "../Firebase/firestoreHelper"
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function Home({ navigation, route }) {
-  // writeToDB({name: "yy"}, "goals");
-  // console.log(database);
   const [receivedData, setReceivedData] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState([]);
-
   const appName = "My awesome app";
 
   useEffect(() => {
-    const unsbscribe = onSnapshot(collection(database, "goals"), (querySnapshot) => {
+    const unsubscribe = onSnapshot(collection(database, "goals"), (querySnapshot) => {
       let newArray = [];
       if (!querySnapshot.empty) {
         querySnapshot.forEach((docSnapshot) => {
-          console.log(docSnapshot.data());
           newArray.push({ id: docSnapshot.id, ...docSnapshot.data() });
         });
       }
       setGoals(newArray);
     });
     return () => {
-      unsbscribe();
+      unsubscribe();
     };
   }, []);
 
   function handleInputData(data) {
-    console.log("App.js ", data);
+    console.log("Received data:", data);
 
-    let newGoal = { text: data };
+    let newGoal = { text: data.text, imageUri: data.imageUri };
     writeToDB("goals", newGoal);
-    // console.log("App.js knows new goal is added");
-    // setGoals((prevGoals) => {
-    //   return [...prevGoals, newGoal];
-    // });
 
-    setReceivedData(data);
-    setModalVisible(false);
+    setReceivedData(data.text); // Store the text received for debugging if needed
+    setModalVisible(false); // Close the modal after submission
   }
 
   function isModalVisible() {
+    console.log("Add a Goal button clicked");
     setModalVisible(true);
   }
 
@@ -67,35 +58,19 @@ export default function Home({ navigation, route }) {
   }
 
   function handleDelete(deletedId) {
-    // console.log("App.js knows goal is deleted");
-    // const newGoals = goals.filter((goalObj) => {
-    //   return goalObj.id !== deletedId;
-    // });
-    setGoals((prevGoals) => {
-      return prevGoals.filter((goalObj) => {
-        return goalObj.id !== deletedId;
-      });
-    });
-
+    setGoals((prevGoals) => prevGoals.filter((goalObj) => goalObj.id !== deletedId));
     deleteFromDB("goals", deletedId);
   }
-
 
   function deleteAllGoals() {
     Alert.alert("Delete all", "Are you sure?", [
       {
         text: "Yes",
         onPress: () => {
-          // setGoals([]);
           deleteAll("goals");
         },
       },
-      {
-        text: "No",
-        onPress: () => {
-          console.log("Delete cancelled");
-        },
-      },
+      { text: "No", onPress: () => console.log("Delete cancelled") },
     ]);
   }
 
@@ -103,26 +78,20 @@ export default function Home({ navigation, route }) {
     return (
       <View
         style={[
-          styles.seperators,
-          highlighted ? styles.seperatorHighlighted : null,
+          styles.separators,
+          highlighted ? styles.separatorHighlighted : null,
         ]}
       />
     );
   }
 
-  // function handleGoalPress(pressGoal) {
-  //   console.log(pressGoal);
-  //   navigation.navigate("Details", { goalData: pressGoal });
-  // }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topView}>
         <StatusBar style="auto" />
-        <Header name={appName}>
-          {/* <Text>child 1</Text>
-        <Text>child 2</Text> */}
-        </Header>
+        <Header name={appName} />
+
+        {/* "Add a Goal" Button */}
         <PressableButton
           onPress={isModalVisible}
           componentStyle={styles.buttonDefault}
@@ -131,18 +100,19 @@ export default function Home({ navigation, route }) {
           <Text style={styles.buttonText}>Add a goal</Text>
         </PressableButton>
 
-        {/* <Button title="Add a Goal" onPress={isModalVisible} /> */}
+        {/* Input Modal for Adding Goal */}
         <Input
           autoFocus={true}
-          inputHandler={handleInputData}
-          modalVisible={modalVisible}
-          cancelHandler={handleCancelInput}
+          inputHandler={handleInputData} // Function to handle data received from Input.js
+          modalVisible={modalVisible} // Control visibility of Input modal
+          cancelHandler={handleCancelInput} // Function to handle cancel action
         />
       </View>
+
+      {/* Goals List */}
       <View style={styles.bottomView}>
         <FlatList
           contentContainerStyle={styles.scrollViewContainer}
-          // ListEmptyComponent={<Text style={styles.text}>No goals to show</Text>}
           ItemSeparatorComponent={renderSeparator}
           ListHeaderComponent={() =>
             goals.length > 0 ? (
@@ -159,81 +129,28 @@ export default function Home({ navigation, route }) {
             ) : null
           }
           data={goals}
-          renderItem={({ item, separators }) => {
-            return (
-              <GoalItem
-                deleteHandler={handleDelete}
-                goalObj={item}
-                onPressIn={() => separators.highlight()}
-                onPressOut={() => separators.unhighlight()}
-              />
-            );
-          }}
+          renderItem={({ item, separators }) => (
+            <GoalItem
+              deleteHandler={handleDelete}
+              goalObj={item}
+              onPressIn={() => separators.highlight()}
+              onPressOut={() => separators.unhighlight()}
+            />
+          )}
         />
-
-        {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-          <Text style={styles.text}>{receivedData}</Text> 
-          {goals.map((goalObj) => {
-            return (
-              <View style={styles.textContainer}>
-                <Text style={styles.text} key={goalObj.id}>
-                  {goalObj.text}
-                </Text>
-              </View>
-            );
-          })}
-        </ScrollView>*/}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    justifyContent: "center",
-  },
-  topView: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bottomView: {
-    flex: 4,
-    backgroundColor: "#d8bfd8",
-    alignItems: "center",
-  },
-  scrollViewContainer: {
-    // alignItems: "center",
-  },
-  text: {
-    color: "purple",
-    fontSize: 20,
-    marginTop: 10,
-    alignSelf: "center",
-  },
-  seperators: {
-    height: 4,
-    width: "100%",
-    backgroundColor: "gray",
-    alignSelf: "center",
-  },
-  seperatorHighlighted: {
-    backgroundColor: "purple",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 20,
-    padding: 5,
-  },
-  buttonDefault: {
-    backgroundColor: "purple",
-    margin: 10,
-    padding: 5,
-  },
-  buttonPressed: {
-    backgroundColor: "blue",
-  },
+  container: { flex: 1, backgroundColor: "#fff", justifyContent: "center" },
+  topView: { flex: 1, alignItems: "center", justifyContent: "center" },
+  bottomView: { flex: 4, backgroundColor: "#d8bfd8", alignItems: "center" },
+  text: { color: "purple", fontSize: 20, marginTop: 10, alignSelf: "center" },
+  separators: { height: 4, width: "100%", backgroundColor: "gray" },
+  separatorHighlighted: { backgroundColor: "purple" },
+  buttonText: { color: "white", fontSize: 20, padding: 5 },
+  buttonDefault: { backgroundColor: "purple", margin: 10, padding: 5 },
+  buttonPressed: { backgroundColor: "blue" },
 });
