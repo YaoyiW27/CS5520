@@ -25,9 +25,9 @@
     },
     "plugins": [
       [
-        "expo-camera",
+        "expo-image-picker",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+          "cameraPermission": "The app accesses your camera to let you take a picture and share them with your friends."
         }
       ]
     ]

@@ -1,81 +1,105 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Modal, Alert, Image } from 'react-native';
-import ImageManager from './ImageManager';
+import {
+  Alert,
+  Button,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+} from "react-native";
+import React, { useState } from "react";
+import ImageManager from "./ImageManager";
 
-export default function Input({ autoFocus, inputHandler, modalVisible, cancelHandler }) {
+export default function Input({
+  textInputFocus,
+  inputHandler,
+  isModalVisible,
+  dismissModal,
+}) {
   const [text, setText] = useState("");
-  const [message, setMessage] = useState("");
-  const [showCount, setShowCount] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
-  const [imageUri, setImageUri] = useState(null); // State to store the image URI
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [autoFocus]);
-
-  useEffect(() => {
-    setConfirmed(text.length >= 3);
-  }, [text]);
-
-  const handleConfirm = () => {
-    // Pass text and image URI to Home.js via inputHandler
+  const [blur, setBlur] = useState(false);
+  const [imageUri, setImageUri] = useState("");
+  const minimumChar = 3;
+  function handleConfirm() {
+    // console.log(text);
     inputHandler({ text, imageUri });
     setText("");
-    setImageUri(null); // Clear the image after confirming
-  };
-
-  const handleBlur = () => {
-    setMessage(text.length >= 3 ? "Thank you" : "Please type more than 3 characters");
-    setShowCount(false);
-  };
-
-  const handleImageTaken = (uri) => {
-    setImageUri(uri); // Save the image URI from ImageManager
-  };
-
-  const handleCancel = () => {
-    Alert.alert("isCancel", "Do you want to cancel?", [
-      { text: "Cancel", style: "cancel" },
+  }
+  function handleCancel() {
+    // hide the modal
+    Alert.alert("Cancel", "Are you sure you want to cancel", [
+      { text: "cancel", style: "cancel" },
       {
-        text: "OK",
+        text: "ok",
         onPress: () => {
-          cancelHandler();
           setText("");
-          setImageUri(null);
+          dismissModal();
         },
       },
     ]);
-  };
-
+  }
+  function receiveImageUri(uri) {
+    console.log("In Input ", uri);
+    setImageUri(uri);
+  }
   return (
-    <Modal visible={modalVisible} animationType="slide" transparent={true}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
+    <Modal animationType="slide" visible={isModalVisible} transparent={true}>
+      <View style={styles.container}>
+        <View style={styles.modalContainer}>
+          <Image
+            source={{
+              uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png",
+            }}
+            style={styles.image}
+            alt="Image of a an arrow"
+          />
+          <Image
+            source={require("../assets/target.png")}
+            style={styles.image}
+            alt="Image of a an arrow"
+          />
+
           <TextInput
-            style={styles.input}
-            ref={inputRef}
+            autoFocus={textInputFocus}
             placeholder="Type something"
+            autoCorrect={true}
             keyboardType="default"
             value={text}
+            style={styles.input}
             onChangeText={(changedText) => {
               setText(changedText);
-              setShowCount(changedText.length > 0);
             }}
-            onBlur={handleBlur}
+            onBlur={() => {
+              setBlur(true);
+            }}
+            onFocus={() => {
+              setBlur(false);
+            }}
           />
-          {showCount && <Text style={{ color: "gray", marginTop: 5 }}>Character count: {text.length}</Text>}
-          {message && <Text style={{ color: "gray", marginTop: 5 }}>{message}</Text>}
 
-          <View style={styles.button}>
-            <Button onPress={handleCancel} title="Cancel" />
-            <Button onPress={handleConfirm} disabled={!confirmed} title="Confirm" />
+          {blur ? (
+            text.length >= minimumChar ? (
+              <Text>Thank you</Text>
+            ) : (
+              <Text>Please type more than {minimumChar} characters</Text>
+            )
+          ) : (
+            text && <Text>{text.length}</Text>
+          )}
+          <ImageManager receiveImageUri={receiveImageUri} />
+          <View style={styles.buttonsRow}>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={handleCancel} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                disabled={text.length < minimumChar}
+                title="Confirm"
+                onPress={handleConfirm}
+              />
+            </View>
           </View>
-
-          {/* Pass the handleImageTaken function to ImageManager */}
-          <ImageManager onImageTaken={handleImageTaken} />
         </View>
       </View>
     </Modal>
@@ -83,30 +107,27 @@ export default function Input({ autoFocus, inputHandler, modalVisible, cancelHan
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  container: {
     flex: 1,
+    // backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
-  input: { borderColor: "purple", borderWidth: 2, padding: 5, color: "purple" },
-  button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "80%",
+  input: {
+    borderColor: "purple",
+    borderWidth: 2,
+    padding: 5,
+    marginVertical: 10,
   },
-  modalContent: {
-    backgroundColor: "darkgray",
+  modalContainer: {
+    borderRadius: 6,
+    backgroundColor: "#999",
     alignItems: "center",
-    justifyContent: "center",
-    height: "60%", // Adjusted height to fit the camera button and image display
-    width: "80%",
-    borderRadius: 20,
-    padding: 10,
-    marginTop: 50,
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 10,
+  buttonContainer: {
+    width: "30%",
+    margin: 10,
   },
+  buttonsRow: { flexDirection: "row" },
+  image: { width: 100, height: 100 },
 });

@@ -1,65 +1,64 @@
-import React, { useState } from 'react';
-import { View, Button, Image, StyleSheet, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { Alert, Button, Image, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+// import { launchCameraAsync } from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 
-export default function ImageManager({ onImageTaken }) { // Accept the callback prop
+//receive the callback from Input
+export default function ImageManager({ receiveImageUri }) {
   const [response, requestPermission] = ImagePicker.useCameraPermissions();
-  const [selectedImage, setSelectedImage] = useState(null); // State to store the URI of the captured image
-
-  // Function to check camera permissions
-  const verifyPermission = async () => {
-    if (response.granted) {
-      return true; // Permission is already granted
-    }
-    const permissionResult = await requestPermission(); // Request permission if not granted
-    return permissionResult.granted;
-  };
-
-  // Function to handle capturing an image with permission check
-  const takeImageHandler = async () => {
-    const hasPermission = await verifyPermission();
-    if (!hasPermission) {
-      Alert.alert("Permission required", "Camera access is needed to take a photo.");
-      return;
-    }
-
+  const [imageUri, setImageUri] = useState("");
+  async function verifyPermission() {
     try {
+      //check if user has given permission
+      //if so return true
+      if (response.granted) {
+        return true;
+      }
+      //if not ask for permission and return what user has chosen
+      const permissionResponse = await requestPermission();
+      return permissionResponse.granted;
+    } catch (err) {
+      console.log("verify permission ", err);
+    }
+  }
+  async function takeImageHandler() {
+    try {
+      // only launch camera if we have permission from user
+      const hasPermission = await verifyPermission();
+      console.log(hasPermission);
+      if (!hasPermission) {
+        Alert.alert("You need to give permission for camera");
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
-        quality: 1,
       });
 
+      // read the fist element from assets array, and access its uri
       if (!result.canceled) {
-        const imageUri = result.assets[0].uri; // Get the URI of the image
-        setSelectedImage(imageUri); // Store URI for preview
-        onImageTaken(imageUri); // Pass URI back to Input.js
-      } else {
-        Alert.alert('Camera canceled');
+        setImageUri(result.assets[0].uri);
+        // send this uri back to Input
+        receiveImageUri(result.assets[0].uri);
       }
-    } catch (error) {
-      console.error("Error opening camera:", error);
-      Alert.alert("Error", "Could not open camera. Please try again.");
+    } catch (err) {
+      console.log("take image ", err);
     }
-  };
-
+  }
   return (
-    <View style={styles.container}>
-      <Button title="Take a Photo" onPress={takeImageHandler} />
-      {selectedImage && (
-        <Image source={{ uri: selectedImage }} style={styles.image} />
+    <View>
+      <Button title="Take An Image" onPress={takeImageHandler} />
+      {imageUri && (
+        <Image
+          source={{
+            uri: imageUri,
+          }}
+          style={styles.image}
+          alt="preview of the image taken"
+        />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    marginTop: 20,
-  },
-});
+const styles = StyleSheet.create({ image: { width: 100, height: 100 } });
