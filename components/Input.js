@@ -1,119 +1,104 @@
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
+  Alert,
   Button,
   Modal,
-  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
   Image,
 } from "react-native";
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import ImageManager from "./ImageManager";
 
 export default function Input({
-  autoFocus,
+  textInputFocus,
   inputHandler,
-  modalVisible,
-  cancelHandler,
+  isModalVisible,
+  dismissModal,
 }) {
   const [text, setText] = useState("");
-  const [message, setMessage] = useState("");
-  const [showCount, setShowCount] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [autoFocus]);
-
-  useEffect(() => {
-    if (text.length >= 3) {
-      setConfirmed(true);
-    } else {
-      setConfirmed(false);
-    }
-  });
-
+  const [blur, setBlur] = useState(false);
+  const [imageUri, setImageUri] = useState("");
+  const minimumChar = 3;
   function handleConfirm() {
     // console.log(text);
-    inputHandler(text);
+    inputHandler({ text, imageUri });
     setText("");
   }
-
-  const handleBlur = () => {
-    if (text.length >= 3) {
-      setMessage("Thank you");
-    } else {
-      setMessage("Please type more than 3 characters");
-    }
-    setShowCount(false);
-  };
-
   function handleCancel() {
-    Alert.alert("isCancel", "Do you want to cancel?", [
+    // hide the modal
+    Alert.alert("Cancel", "Are you sure you want to cancel", [
+      { text: "cancel", style: "cancel" },
       {
-        text: "Cancel",
+        text: "ok",
         onPress: () => {
-          console.log("Cancel Pressed");
-        },
-        style: "cancel",
-      },
-      {
-        text: "OK",
-        onPress: () => {
-          cancelHandler();
           setText("");
+          dismissModal();
         },
       },
     ]);
   }
-
+  function receiveImageUri(uri) {
+    console.log("In Input ", uri);
+    setImageUri(uri);
+  }
   return (
-    <Modal visible={modalVisible} animationType="slide" transparent={true}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
+    <Modal animationType="slide" visible={isModalVisible} transparent={true}>
+      <View style={styles.container}>
+        <View style={styles.modalContainer}>
           <Image
-            style={styles.image}
-            source={require("../assets/target.png")}
-            alt={"Image of a an arrow"}
-          />
-          <Image
-            style={styles.image}
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/2617/2617812.png",
             }}
-            alt={"Image of a an arrow"}
+            style={styles.image}
+            alt="Image of a an arrow"
           />
+          <Image
+            source={require("../assets/target.png")}
+            style={styles.image}
+            alt="Image of a an arrow"
+          />
+
           <TextInput
-            style={styles.input}
-            ref={inputRef}
+            autoFocus={textInputFocus}
             placeholder="Type something"
+            autoCorrect={true}
             keyboardType="default"
             value={text}
-            onChangeText={function (changedText) {
+            style={styles.input}
+            onChangeText={(changedText) => {
               setText(changedText);
-              setShowCount(changedText.length > 0);
             }}
-            onBlur={handleBlur}
+            onBlur={() => {
+              setBlur(true);
+            }}
+            onFocus={() => {
+              setBlur(false);
+            }}
           />
-          {showCount && (
-            <Text style={{ color: "gray", marginTop: 5 }}>
-              Character count: {text.length}
-            </Text>
+
+          {blur ? (
+            text.length >= minimumChar ? (
+              <Text>Thank you</Text>
+            ) : (
+              <Text>Please type more than {minimumChar} characters</Text>
+            )
+          ) : (
+            text && <Text>{text.length}</Text>
           )}
-          {message && (
-            <Text style={{ color: "gray", marginTop: 5 }}>{message}</Text>
-          )}
-          <View style={styles.button}>
-            <Button onPress={handleCancel} title="Cancel" />
-            <Button
-              onPress={handleConfirm}
-              disabled={!confirmed}
-              title="Confirm"
-            />
+          <ImageManager receiveImageUri={receiveImageUri} />
+          <View style={styles.buttonsRow}>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={handleCancel} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                disabled={text.length < minimumChar}
+                title="Confirm"
+                onPress={handleConfirm}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -122,30 +107,27 @@ export default function Input({
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  container: {
     flex: 1,
+    // backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
-  input: { borderColor: "purple", borderWidth: 2, padding: 5, color: "purple" },
-  button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "80%",
+  input: {
+    borderColor: "purple",
+    borderWidth: 2,
+    padding: 5,
+    marginVertical: 10,
   },
-  modalContent: {
-    backgroundColor: "darkgray",
+  modalContainer: {
+    borderRadius: 6,
+    backgroundColor: "#999",
     alignItems: "center",
-    justifyContent: "center",
-    height: "40%",
-    width: "60%",
-    borderRadius: 20,
-    padding: 10,
-    marginTop: 50,
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 10,
+  buttonContainer: {
+    width: "30%",
+    margin: 10,
   },
+  buttonsRow: { flexDirection: "row" },
+  image: { width: 100, height: 100 },
 });
