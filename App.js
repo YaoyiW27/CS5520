@@ -84,7 +84,7 @@ const appStack = (
     <Stack.Screen 
       name="Map" 
       component={Map}
-      options={{ title: "Interactive Map" }}
+      options={{ title: "Select Location" }}
     />
   </>
 );

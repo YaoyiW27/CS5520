@@ -2,10 +2,12 @@ import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { googleMapsConfig } from '../Firebase/firebaseSetup';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function LocationManager() {
   const navigation = useNavigation();
+  const route = useRoute();
+  
   const [locationData, setLocationData] = useState({
     latitude: null,
     longitude: null
@@ -14,6 +16,17 @@ export default function LocationManager() {
   const [loading, setLoading] = useState(false);
   const [response, requestPermission] = Location.useForegroundPermissions();
 
+  // Handle selected location from map
+  useEffect(() => {
+    if (route.params?.selectedLocation) {
+      setLocationData({
+        latitude: route.params.selectedLocation.latitude,
+        longitude: route.params.selectedLocation.longitude
+      });
+    }
+  }, [route.params?.selectedLocation]);
+
+  // Generate map URL when location changes
   useEffect(() => {
     if (locationData.latitude && locationData.longitude) {
       const url = `https://maps.googleapis.com/maps/api/staticmap?center=${locationData.latitude},${locationData.longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:L%7C${locationData.latitude},${locationData.longitude}&key=${googleMapsConfig.apiKey}`;
@@ -21,6 +34,7 @@ export default function LocationManager() {
     }
   }, [locationData]);
 
+  // Verify location permissions
   async function verifyPermission() {
     try {
       if (!response || !response.granted) {
@@ -34,6 +48,7 @@ export default function LocationManager() {
     }
   }
 
+  // Get current location
   async function locateUserHandler() {
     try {
       setLoading(true);
@@ -56,6 +71,8 @@ export default function LocationManager() {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude
       });
+      
+      console.log("Location updated:", currentLocation.coords);
     } catch (err) {
       console.error("Error getting location:", err);
       Alert.alert(
@@ -68,6 +85,7 @@ export default function LocationManager() {
     }
   }
 
+  // Navigate to interactive map
   const navigateToMap = () => {
     if (locationData.latitude && locationData.longitude) {
       navigation.navigate('Map', { location: locationData });
