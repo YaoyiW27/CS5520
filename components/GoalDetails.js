@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View, Image } from "react-native";
+import { Button, StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import PressableButton from "./PressableButton";
 import Entypo from '@expo/vector-icons/Entypo';
@@ -9,33 +9,28 @@ import { storage } from "../Firebase/firebaseSetup";
 export default function GoalDetails({ navigation, route }) {
   const [warning, setWarning] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Function to handle the warning state and update navigation title
-  const handleWarning = async () => {
-    setWarning(true);
-    navigation.setOptions({
-      title: "Warning",
-    });
-
-    if (route.params && route.params.goalData && route.params.goalData.id) {
-      await addWarningToGoal(route.params.goalData.id);
-    }
-  };
-
-  // Function to fetch image URL from Firebase Storage
   useEffect(() => {
-    if (route.params?.goalData?.imageUri) {
-      const reference = ref(storage, route.params.goalData.imageUri);
-      getDownloadURL(reference)
-        .then((url) => {
+    async function loadImage() {
+      if (route.params?.goalData?.imageUri) {
+        setLoading(true);
+        try {
+          console.log("Fetching image from path:", route.params.goalData.imageUri);
+          const reference = ref(storage, route.params.goalData.imageUri);
+          const url = await getDownloadURL(reference);
+          console.log("Image URL retrieved:", url);
           setImageUrl(url);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Failed to load image:", error);
-        });
+        } finally {
+          setLoading(false);
+        }
+      }
     }
 
-    // Set up warning button in the header
+    loadImage();
+
     navigation.setOptions({
       headerRight: () => (
         <PressableButton
@@ -47,31 +42,41 @@ export default function GoalDetails({ navigation, route }) {
         </PressableButton>
       ),
     });
-  }, [navigation, handleWarning, route.params?.goalData?.imageUri]);
+  }, [navigation, route.params?.goalData?.imageUri]);
 
-  // Function to navigate to more details
+  const handleWarning = async () => {
+    setWarning(true);
+    navigation.setOptions({
+      title: "Warning",
+    });
+
+    if (route.params?.goalData?.id) {
+      await addWarningToGoal(route.params.goalData.id);
+    }
+  };
+
   function moreDetailsHandler() {
     navigation.push("Details");
   }
 
   return (
     <View style={styles.container}>
-      {route.params ? (
-        <Text style={warning && styles.warningStyle}>
-          This is details of a goal with text "{route.params.goalData.text}" and
-          id "{route.params.goalData.id}"
-        </Text>
-      ) : (
-        <Text style={warning && styles.warningStyle}>More Details</Text>
-      )}
+      <Text style={warning ? styles.warningStyle : styles.goalText}>
+        {route.params 
+          ? `This is details of a goal with text "${route.params.goalData.text}" and id "${route.params.goalData.id}"`
+          : "More Details"
+        }
+      </Text>
       
-      {/* Display the fetched image if available */}
-      {imageUrl && (
+      {loading ? (
+        <ActivityIndicator size="large" color="purple" style={styles.loader} />
+      ) : imageUrl ? (
         <Image
           source={{ uri: imageUrl }}
           style={styles.image}
+          resizeMode="cover"
         />
-      )}
+      ) : null}
 
       <Button title="More Details" onPress={moreDetailsHandler} />
     </View>
@@ -91,9 +96,16 @@ const styles = StyleSheet.create({
     backgroundColor: "yellow",
   },
   image: {
-    width: 200,
-    height: 200,
-    marginTop: 20,
-    borderRadius: 10,
+    width: 300,
+    height: 300,
+    marginVertical: 20,
+    borderRadius: 15,
   },
+  goalText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  loader: {
+    marginVertical: 20,
+  }
 });

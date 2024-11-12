@@ -52,21 +52,30 @@ export default function Home({ navigation }) {
   }, []);
 
   // receive text and image uri
-  function handleInputData(data) {
-    let newGoal = { text: data.text, owner: auth.currentUser.uid };
+  async function handleInputData(data) {
+    try {
+      const newGoal = { 
+        text: data.text, 
+        owner: auth.currentUser.uid 
+      };
   
-    if (data.uri && typeof data.uri === 'string') {
-      fetchAndUploadImage(data.uri).then((imagePath) => {
-        newGoal.imageUri = imagePath; // Store the image path in the goal
-        console.log("newGoal before writeToDB:", newGoal); // Debugging log
-        writeToDB("goals", newGoal); // Save to Firestore with the imageUri
-      });
-    } else {
-      console.log("newGoal without image:", newGoal); // Debugging log
-      writeToDB("goals", newGoal);
+      if (data.uri) {
+        
+        const imagePath = await fetchAndUploadImage(data.uri);
+        
+        if (imagePath) {
+          newGoal.imageUri = imagePath;
+        }
+      }
+  
+      console.log("Writing to Firestore:", newGoal);
+      await writeToDB("goals", newGoal);
+      
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Error in handleInputData:", error);
+      Alert.alert("Error", "Failed to save goal with image");
     }
-  
-    setModalVisible(false);
   }
 
   function dismissModal() {
@@ -106,14 +115,17 @@ async function fetchAndUploadImage(uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
 
-    const imageName = uri.substring(uri.lastIndexOf('/') + 1);
+    const timestamp = new Date().getTime();
+    const imageName = `goal_image_${timestamp}.jpg`;
     const storage = getStorage();
-    const imageRef = ref(storage, `images/${imageName}`);
+    const imageRef = ref(storage, `goals/${auth.currentUser.uid}/${imageName}`);
+    
     const uploadResult = await uploadBytesResumable(imageRef, blob);
-
-    return uploadResult.metadata.fullPath; // Return the path to store in Firestore
+    
+    return uploadResult.metadata.fullPath;
   } catch (error) {
     console.error("Image upload failed:", error);
+    return null;
   }
 }
 

@@ -21,28 +21,41 @@ export default function Input({
   const [blur, setBlur] = useState(false);
   const [imageUri, setImageUri] = useState("");
   const minimumChar = 3;
+
   function handleConfirm() {
-    // console.log(text);
-    inputHandler({ text, imageUri });
+    if (text.trim().length < minimumChar) {
+      Alert.alert("Invalid input", "Please enter at least 3 characters");
+      return;
+    }
+
+    inputHandler({
+      text: text,
+      uri: imageUri  
+    });
+
     setText("");
+    setImageUri("");
   }
+
   function handleCancel() {
-    // hide the modal
     Alert.alert("Cancel", "Are you sure you want to cancel", [
       { text: "cancel", style: "cancel" },
       {
         text: "ok",
         onPress: () => {
           setText("");
+          setImageUri("");
           dismissModal();
         },
       },
     ]);
   }
+
   function receiveImageUri(uri) {
-    console.log("In Input ", uri);
+    console.log("In Input - Received URI:", uri);
     setImageUri(uri);
   }
+
   return (
     <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
@@ -57,7 +70,7 @@ export default function Input({
           <Image
             source={require("../assets/target.png")}
             style={styles.image}
-            alt="Image of a an arrow"
+            alt="Image of a target"
           />
 
           <TextInput
@@ -67,15 +80,9 @@ export default function Input({
             keyboardType="default"
             value={text}
             style={styles.input}
-            onChangeText={(changedText) => {
-              setText(changedText);
-            }}
-            onBlur={() => {
-              setBlur(true);
-            }}
-            onFocus={() => {
-              setBlur(false);
-            }}
+            onChangeText={setText}
+            onBlur={() => setBlur(true)}
+            onFocus={() => setBlur(false)}
           />
 
           {blur ? (
@@ -87,7 +94,17 @@ export default function Input({
           ) : (
             text && <Text>{text.length}</Text>
           )}
+
           <ImageManager receiveImageUri={receiveImageUri} />
+          
+          {imageUri ? (
+            <Image 
+              source={{ uri: imageUri }} 
+              style={styles.previewImage}
+              resizeMode="cover"
+            />
+          ) : null}
+
           <View style={styles.buttonsRow}>
             <View style={styles.buttonContainer}>
               <Button title="Cancel" onPress={handleCancel} />
@@ -109,25 +126,47 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContainer: {
+    borderRadius: 6,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    padding: 20,
+    width: '90%',
+    maxWidth: 500,
   },
   input: {
     borderColor: "purple",
     borderWidth: 2,
-    padding: 5,
+    padding: 10,
     marginVertical: 10,
-  },
-  modalContainer: {
-    borderRadius: 6,
-    backgroundColor: "#999",
-    alignItems: "center",
+    width: '100%',
+    borderRadius: 4,
   },
   buttonContainer: {
     width: "30%",
     margin: 10,
   },
-  buttonsRow: { flexDirection: "row" },
-  image: { width: 100, height: 100 },
+  buttonsRow: { 
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  image: { 
+    width: 100, 
+    height: 100,
+    marginVertical: 10,
+  },
+  previewImage: {
+    width: 200,
+    height: 200,
+    marginVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'purple',
+  },
 });
