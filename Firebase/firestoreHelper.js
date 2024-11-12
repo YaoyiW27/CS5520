@@ -3,9 +3,15 @@ import {database} from "./firebaseSetup";
 
 export async function writeToDB(collectionName, data) {
   try {
-    await addDoc(collection(database,collectionName), data);
-  } catch (err){
-    console.log("write to db", err);
+    // Validate that collectionName is a string and data is an object
+    if (typeof collectionName !== 'string' || typeof data !== 'object' || data === null) {
+      throw new TypeError("Invalid parameters for writeToDB: collectionName must be a string and data must be an object");
+    }
+
+    await addDoc(collection(database, collectionName), data);
+    console.log("Data successfully written to Firestore:", data);
+  } catch (err) {
+    console.log("Error in writeToDB:", err);
   }
 }
 // lab6 Q1: We use addDoc because there is no need to specify the document ID. 

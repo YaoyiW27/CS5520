@@ -21,6 +21,7 @@ import {
   deleteAllFromDB,
 } from "../Firebase/firestoreHelper";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 export default function Home({ navigation }) {
   const [receivedData, setReceivedData] = useState("");
@@ -52,18 +53,22 @@ export default function Home({ navigation }) {
 
   // receive text and image uri
   function handleInputData(data) {
-    console.log("App.js ", data);
-    let newGoal = { text: data.text };
-    // add info about owner of the goal
-    newGoal = { ...newGoal, owner: auth.currentUser.uid };
-    // writeToDB(newGoal, "goals");
-    //make a new obj and store the received data as the obj's text property
-    // setGoals((prevGoals) => {
-    //   return [...prevGoals, newGoal];
-    // });
-    // setReceivedData(data);
+    let newGoal = { text: data.text, owner: auth.currentUser.uid };
+  
+    if (data.uri && typeof data.uri === 'string') {
+      fetchAndUploadImage(data.uri).then((imagePath) => {
+        newGoal.imageUri = imagePath; // Store the image path in the goal
+        console.log("newGoal before writeToDB:", newGoal); // Debugging log
+        writeToDB("goals", newGoal); // Save to Firestore with the imageUri
+      });
+    } else {
+      console.log("newGoal without image:", newGoal); // Debugging log
+      writeToDB("goals", newGoal);
+    }
+  
     setModalVisible(false);
   }
+
   function dismissModal() {
     setModalVisible(false);
   }
@@ -94,6 +99,23 @@ export default function Home({ navigation }) {
       { text: "No", style: "cancel" },
     ]);
   }
+
+// Function to fetch and upload image
+async function fetchAndUploadImage(uri) {
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const imageName = uri.substring(uri.lastIndexOf('/') + 1);
+    const storage = getStorage();
+    const imageRef = ref(storage, `images/${imageName}`);
+    const uploadResult = await uploadBytesResumable(imageRef, blob);
+
+    return uploadResult.metadata.fullPath; // Return the path to store in Firestore
+  } catch (error) {
+    console.error("Image upload failed:", error);
+  }
+}
 
   return (
     <SafeAreaView style={styles.container}>
