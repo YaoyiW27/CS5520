@@ -1,13 +1,10 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import { getFirestore } from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_apiKey,
   authDomain: process.env.EXPO_PUBLIC_authDomain,
@@ -19,9 +16,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize and export Firebase services
 export const database = getFirestore(app);
-// export const auth = getAuth(app);
+export const storage = getStorage(app);
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
-export const storage = getStorage(app);
+
+// Export Google Maps configuration
+export const googleMapsConfig = {
+  apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+};
