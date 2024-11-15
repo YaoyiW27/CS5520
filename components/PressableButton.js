@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 
 export default function PressableButton({
@@ -11,17 +11,22 @@ export default function PressableButton({
     <Pressable
       onPress={pressedHandler}
       style={({ pressed }) => {
-        return [styles.defaultStyle, componentStyle, pressed && pressedStyle];
+        return [
+          styles.defaultStyle,
+          componentStyle,
+          pressed && styles.defaultPressedStyle,
+          pressed && pressedStyle,
+        ];
       }}
     >
       <View>{children}</View>
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
-  defaultStyle: {
-    margin: 10,
-    padding: 5
+  defaultStyle: { backgroundColor: "beige", padding: 5, borderRadius: 5 },
+  defaultPressedStyle: {
+    backgroundColor: "#a4a",
+    opacity: 0.2,
   },
 });

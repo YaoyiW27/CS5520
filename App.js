@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Home from "./components/Home";
+import Home from "./Components/Home";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import GoalDetails from "./components/GoalDetails";
+import GoalDetails from "./Components/GoalDetails";
 import { Button } from "react-native";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Login from "./Components/Login";
+import Signup from "./Components/Signup";
 import { auth } from "./Firebase/firebaseSetup";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import Profile from "./components/Profile";
-import PressableButton from "./components/PressableButton";
+import Profile from "./Components/Profile";
+import PressableButton from "./Components/PressableButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Map from './components/Map';
+import Map from "./Components/Map";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,11 +81,7 @@ const appStack = (
         },
       }}
     />
-    <Stack.Screen 
-      name="Map" 
-      component={Map}
-      options={{ title: "Select Location" }}
-    />
+    <Stack.Screen name="Map" component={Map} />
   </>
 );
 export default function App() {

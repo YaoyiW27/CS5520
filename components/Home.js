@@ -14,14 +14,14 @@ import { useEffect, useState } from "react";
 import Input from "./Input";
 import GoalItem from "./GoalItem";
 import PressableButton from "./PressableButton";
-import { auth, database } from "../Firebase/firebaseSetup";
+import { auth, database, storage } from "../Firebase/firebaseSetup";
 import {
   writeToDB,
   deleteFromDB,
   deleteAllFromDB,
 } from "../Firebase/firestoreHelper";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { ref, uploadBytesResumable } from "firebase/storage";
 
 export default function Home({ navigation }) {
   const [receivedData, setReceivedData] = useState("");
@@ -51,33 +51,46 @@ export default function Home({ navigation }) {
     return () => unsubscribe();
   }, []);
 
-  // receive text and image uri
-  async function handleInputData(data) {
+  async function fetchAndUploadImage(uri) {
     try {
-      const newGoal = { 
-        text: data.text, 
-        owner: auth.currentUser.uid 
-      };
-  
-      if (data.uri) {
-        
-        const imagePath = await fetchAndUploadImage(data.uri);
-        
-        if (imagePath) {
-          newGoal.imageUri = imagePath;
-        }
+      const response = await fetch(uri);
+      if (!response.ok) {
+        // what to do in case of an HTTP error e.g. 404
+        // throw an error
+        throw new Error(`An error happened with status: ${response.status}`);
       }
-  
-      console.log("Writing to Firestore:", newGoal);
-      await writeToDB("goals", newGoal);
-      
-      setModalVisible(false);
-    } catch (error) {
-      console.error("Error in handleInputData:", error);
-      Alert.alert("Error", "Failed to save goal with image");
+      const blob = await response.blob();
+      // let's upload blob to storage
+      const imageName = uri.substring(uri.lastIndexOf("/") + 1);
+      const imageRef = ref(storage, `images/${imageName}`);
+      const uploadResult = await uploadBytesResumable(imageRef, blob);
+      return uploadResult.metadata.fullPath;
+    } catch (err) {
+      console.log("fetch and upload image ", err);
     }
   }
-
+  // receive text and image uri
+  async function handleInputData(data) {
+    console.log("App.js ", data);
+    // upload the image to storage, and get a storage ref
+    let uri = "";
+    if (data.imageUri) {
+      uri = await fetchAndUploadImage(data.imageUri);
+    }
+    let newGoal = { text: data.text };
+    // add info about owner of the goal
+    newGoal = { ...newGoal, owner: auth.currentUser.uid };
+    if (uri) {
+      newGoal = { ...newGoal, imageUri: uri };
+    }
+    writeToDB(newGoal, "goals");
+    //make a new obj and store the received data as the obj's text property
+    // setGoals((prevGoals) => {
+    //   return [...prevGoals, newGoal];
+    // });
+    // setReceivedData(data);
+    setModalVisible(false);
+  }
   function dismissModal() {
     setModalVisible(false);
   }
@@ -108,26 +121,6 @@ export default function Home({ navigation }) {
       { text: "No", style: "cancel" },
     ]);
   }
-
-// Function to fetch and upload image
-async function fetchAndUploadImage(uri) {
-  try {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    const timestamp = new Date().getTime();
-    const imageName = `goal_image_${timestamp}.jpg`;
-    const storage = getStorage();
-    const imageRef = ref(storage, `goals/${auth.currentUser.uid}/${imageName}`);
-    
-    const uploadResult = await uploadBytesResumable(imageRef, blob);
-    
-    return uploadResult.metadata.fullPath;
-  } catch (error) {
-    console.error("Image upload failed:", error);
-    return null;
-  }
-}
 
   return (
     <SafeAreaView style={styles.container}>
