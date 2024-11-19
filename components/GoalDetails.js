@@ -1,40 +1,50 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import PressableButton from "./PressableButton";
-import Entypo from '@expo/vector-icons/Entypo';
-import { addWarningToGoal } from "../Firebase/firestoreHelper";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { updateDB } from "../Firebase/firestoreHelper";
 import GoalUsers from "./GoalUsers";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../Firebase/firebaseSetup";
 
 export default function GoalDetails({ navigation, route }) {
-  // console.log(route.params.goalData);
-
   const [warning, setWarning] = useState(false);
-
-  const handleWarning = async () => {
+  const [imageUri, setImageUri] = useState("");
+  function warningHandler() {
     setWarning(true);
-    navigation.setOptions({
-      title: "Warning",
-    });
-
-    if (route.params && route.params.goalData && route.params.goalData.id) {
-      await addWarningToGoal(route.params.goalData.id);
-    }
-  };
-
+    navigation.setOptions({ title: "Warning!" });
+    updateDB(route.params.goalData.id, { warning: true }, "goals");
+  }
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <PressableButton
-          onPress={handleWarning}
-          componentStyle={styles.warningStyle}
-          pressedStyle={styles.warningButtonPressed}
-        >
-          <Entypo name="warning" size={24} color="red" />
-        </PressableButton>
-      ),
+      headerRight: () => {
+        return (
+          // <Button title="Warning" color="white" onPress={warningHandler} />
+          <PressableButton
+            pressedHandler={warningHandler}
+            componentStyle={{ backgroundColor: "purple" }}
+            pressedStyle={{ opacity: 0.5, backgroundColor: "purple" }}
+          >
+            <AntDesign name="warning" size={24} color="white" />
+          </PressableButton>
+        );
+      },
     });
-  }, [navigation, handleWarning]);
-
+  }, []);
+  useEffect(() => {
+    async function getImageUri() {
+      try {
+        if (route.params.goalData.imageUri) {
+          const imageRef = ref(storage, route.params.goalData.imageUri);
+          const httpsImageURi = await getDownloadURL(imageRef);
+          setImageUri(httpsImageURi);
+        }
+      } catch (err) {
+        console.log("get image ", err);
+      }
+    }
+    getImageUri();
+  }, []);
   function moreDetailsHandler() {
     navigation.push("Details");
   }
@@ -47,10 +57,20 @@ export default function GoalDetails({ navigation, route }) {
           id {route.params.goalData.id}
         </Text>
       ) : (
-        <Text style={warning && styles.warningStyle}>More Details</Text>
+        <Text style={warning && styles.warningStyle}>More details</Text>
       )}
       <Button title="More Details" onPress={moreDetailsHandler} />
-      <GoalUsers id={route.params.goalData.id}/>
+      <GoalUsers id={route.params.goalData.id} />
+      {imageUri && (
+        <Image
+          source={{
+            uri: imageUri,
+          }}
+          style={styles.image}
+          alt="Image of the goal"
+        />
+      )}
+    </View>
     </View>
   );
 }
@@ -59,8 +79,5 @@ const styles = StyleSheet.create({
   warningStyle: {
     color: "red",
   },
-
-  warningButtonPressed: {
-    backgroundColor: "yellow",
-  },
+  image: { width: 100, height: 100 },
 });

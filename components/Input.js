@@ -55,7 +55,7 @@ export default function Input({
             alt="Image of a an arrow"
           />
           <Image
-            source={require("../assets/target.png")}
+            source={require("../assets/goal.png")}
             style={styles.image}
             alt="Image of a an arrow"
           />

@@ -14,13 +14,14 @@ import { useEffect, useState } from "react";
 import Input from "./Input";
 import GoalItem from "./GoalItem";
 import PressableButton from "./PressableButton";
-import { auth, database } from "../Firebase/firebaseSetup";
+import { auth, database, storage } from "../Firebase/firebaseSetup";
 import {
   writeToDB,
   deleteFromDB,
   deleteAllFromDB,
 } from "../Firebase/firestoreHelper";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { ref, uploadBytesResumable } from "firebase/storage";
 
 export default function Home({ navigation }) {
   const [receivedData, setReceivedData] = useState("");
@@ -50,13 +51,39 @@ export default function Home({ navigation }) {
     return () => unsubscribe();
   }, []);
 
+  async function fetchAndUploadImage(uri) {
+    try {
+      const response = await fetch(uri);
+      if (!response.ok) {
+        // what to do in case of an HTTP error e.g. 404
+        // throw an error
+        throw new Error(`An error happened with status: ${response.status}`);
+      }
+      const blob = await response.blob();
+      // let's upload blob to storage
+      const imageName = uri.substring(uri.lastIndexOf("/") + 1);
+      const imageRef = ref(storage, `images/${imageName}`);
+      const uploadResult = await uploadBytesResumable(imageRef, blob);
+      return uploadResult.metadata.fullPath;
+    } catch (err) {
+      console.log("fetch and upload image ", err);
+    }
+  }
   // receive text and image uri
-  function handleInputData(data) {
+  async function handleInputData(data) {
     console.log("App.js ", data);
+    // upload the image to storage, and get a storage ref
+    let uri = "";
+    if (data.imageUri) {
+      uri = await fetchAndUploadImage(data.imageUri);
+    }
     let newGoal = { text: data.text };
     // add info about owner of the goal
     newGoal = { ...newGoal, owner: auth.currentUser.uid };
-    // writeToDB(newGoal, "goals");
+    if (uri) {
+      newGoal = { ...newGoal, imageUri: uri };
+    }
+    writeToDB(newGoal, "goals");
     //make a new obj and store the received data as the obj's text property
     // setGoals((prevGoals) => {
     //   return [...prevGoals, newGoal];
