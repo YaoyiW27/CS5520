@@ -7,16 +7,21 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 const windowWidth = Dimensions.get("window").width;
 
 export default function LocationManager() {
   const navigation = useNavigation();
-
+  const route = useRoute();
   const [location, setLocation] = useState(null);
   const [response, requestPermission] = Location.useForegroundPermissions();
+  useEffect(() => {
+    if (route.params) {
+    setLocation(route.params.selectedLocation);
+    }
+  }, [route]);
   async function verifyPermission() {
     try {
       //check if user has given permission
