@@ -22,6 +22,13 @@ export default function LocationManager() {
     setLocation(route.params.selectedLocation);
     }
   }, [route]);
+
+  function saveLocationHandler() {
+    //call updateDB
+    updateDB(auth.currentUser.uid, {location}, "users");
+    navigation.navigate("Home");
+  }
+
   async function verifyPermission() {
     try {
       //check if user has given permission
@@ -70,6 +77,7 @@ export default function LocationManager() {
           style={styles.image}
         />
       )}
+      {/* <Button title="Save my Location" />*/}
     </View>
   );
 }
