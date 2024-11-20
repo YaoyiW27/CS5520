@@ -71,6 +71,7 @@ export default function GoalDetails({ navigation, route }) {
         />
       )}
     </View>
+    </View>
   );
 }
 
